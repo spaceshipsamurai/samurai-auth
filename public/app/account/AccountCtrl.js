@@ -3,7 +3,7 @@ angular.module('ssAuth').controller('AccountCtrl', ['$scope', '$location',
                                                     function($scope, $location, $http, $routeParams, $window) {
 
     $scope.registrationComplete = function() {
-        return $location.search('rc') || false;
+        return false;
     };
 
     $scope.isPath = function(path)
@@ -16,11 +16,11 @@ angular.module('ssAuth').controller('AccountCtrl', ['$scope', '$location',
             email: $scope.email,
             password: $scope.password
         }).success(function() {
-            $window.location.href = redirect || '/';
+            $window.location.href = '/';
         }).error(function(data) {
 
-            if(data.message)
-                $scope.errorMessage = data.message;
+            if(data.errors)
+                $scope.errors = data.errors;
             else
                 $scope.errorMessage = "Invalid Username/Password";
 
@@ -44,7 +44,7 @@ angular.module('ssAuth').controller('AccountCtrl', ['$scope', '$location',
             var errors = res.errors;
             console.log(errors);
             $scope.errors = errors || ["Invalid Registration Information"];
-        });;
+        });
     };
 
     $scope.clearError = function() {

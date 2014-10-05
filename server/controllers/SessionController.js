@@ -11,6 +11,7 @@ exports.authenticate = function(req, res, next) {
 
     var auth = passport.authenticate('local', function(err, user){
         if(err) { return next(err); }
+
         if(!user){
             res.status(403);
             return res.send({success: false })
@@ -46,6 +47,6 @@ exports.getCurrentUser = function(req, res) {
 
 exports.logout = function(req, res) {
     req.logout();
-
-    res.send({ success: true });
+    res.clearCookie('ag-user');
+    res.redirect('/login');
 }
