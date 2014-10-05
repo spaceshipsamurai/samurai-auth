@@ -30,6 +30,8 @@ html(lang="en")
                                         .form-group
                                             label(for="password") Password
                                             input#password.form-control(type="password", placeholder="password", ng-model="password")
+                                        .pull-left
+                                            a(href="/account/password/forgot", target="_self") Forgot your password?
                                         .pull-right
                                             button.btn.btn-primary(ng-click="login()") Login
                                 div(ng-show="isPath('/register')")

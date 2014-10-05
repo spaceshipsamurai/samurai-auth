@@ -1,0 +1,28 @@
+doctype html
+html(lang="en")
+    head
+        include ../shared/admin_head
+    body.fixed-header.smart-style-1.bg-war-room
+        div
+            .container
+                .row
+                    .col-md-6.col-md-offset-3
+                        .panel.panel-primary(style="margin-top: 30%")
+                            .panel-heading
+                                h3.panel-title Spaceship Samurai Auth System
+                            .panel-body
+                                h1 Password Reset
+                                if error_message
+                                    .alert.alert-dismissable.alert-danger
+                                        button(type="button").close x
+                                        span #{ error_message }
+                                form(role="form", action="/account/password/reset", method="post")
+                                    .form-group
+                                        label(for="pass") Password
+                                        input#pass.form-control(type="password", placeholder="password", name="password")
+                                    .form-group
+                                        label(for="confirmPass") Confirm Password
+                                        input#passReset.form-control(type="password", placeholder="confirm password", name="confirm")
+                                    .pull-right
+                                        button.btn.btn-primary(type="submit") Reset
+                                    input(type="hidden", name="key", value="#{pass_key}")

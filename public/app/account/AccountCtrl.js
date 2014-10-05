@@ -41,7 +41,6 @@ angular.module('ssAuth').controller('AccountCtrl', ['$scope', '$location',
             email: $scope.email,
             password: $scope.password
         }).success(function() {
-            console.log('registered');
             $location.path('/login').search('rc', 'true');
         }).error(function(res) {
             console.log(res);

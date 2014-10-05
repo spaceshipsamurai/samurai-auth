@@ -9,10 +9,7 @@ var mailer = function() {
             api_user: config.sendgrid.api_user,
             api_key: config.sendgrid.api_key
         }
-    }
-
-    console.log(options.auth.api_user);
-    console.log(options.auth.api_key);
+    };
 
     var client = nodemailer.createTransport(sgTransport(options));
 
@@ -20,7 +17,7 @@ var mailer = function() {
 
         client.sendMail(mail, cb);
 
-    }
+    };
 
     return {
         send: sendMail

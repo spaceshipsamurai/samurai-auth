@@ -12,6 +12,8 @@ module.exports = function(mongoose) {
         lastIP: String,
         confirmationId: { type: String },
         confirmationDate: { type: Date },
+        passwordResetId: { type: String },
+        passwordResetExpires: { type: Date },
         character:{
             name: String,
             isPrimary: Boolean,
