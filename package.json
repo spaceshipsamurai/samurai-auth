@@ -14,7 +14,8 @@
     "body-parser": "~1.2.0",
     "neow": "latest",
     "nodemailer": "~1.3.0",
-    "nodemailer-sendgrid-transport": "0.0.2"
+    "nodemailer-sendgrid-transport": "0.0.2",
+    "owasp-password-strength-test": "~1.1.0"
   },
   "devDependencies": {
     "morgan": "~1.1.1"

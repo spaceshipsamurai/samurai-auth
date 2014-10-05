@@ -11,12 +11,13 @@ html(lang="en")
                             .panel-heading
                                 h3.panel-title Spaceship Samurai Auth System
                             .panel-body
-                                .alert.alert-dismissable.alert-danger(ng-show="errorMessage")
+                                .alert.alert-dismissable.alert-danger(ng-show="errors")
                                     button(type="button", ng-click="clearError()").close x
-                                    span {{ errorMessage }}
+                                    p(ng-repeat="error in errors") {{ error }}
                                 .alert.alert-dismissable.alert-success(ng-show="registrationComplete()")
                                     button(type="button", ng-click="clearError()").close x
-                                    span Registration Successfull
+                                    p Registration Successfull
+                                    p An activation email has been sent to the registered email address
                                 ul.nav.nav-tabs(style="margin-bottom: 15px")
                                     li(ng-class="{ active: isPath('/login')}")
                                         a(ng-href="/login") Login

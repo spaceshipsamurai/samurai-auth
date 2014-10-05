@@ -1,8 +1,16 @@
 var encrypt = require('../services/encryption'),
     mailer = require('../services/mailer')(),
-    jade = require('jade');
+    jade = require('jade'),
+    owasp = require('owasp-password-strength-test');
 
 module.exports = function(User) {
+
+    owasp.config({
+        allowPassphrases: true,
+        maxLength: 128,
+        minLength: 10,
+        minPhraseLength: 20
+    });
 
     var showLogin = function(req, res) {
         res.render('login');
@@ -102,20 +110,14 @@ module.exports = function(User) {
             return res.render('account/pass_reset', { pass_key: req.params.id });
 
         });
-
-        return res.render('account/pass_reset', { pass_key: req.params.id });
     };
 
     var postPasswordReset = function(req, res) {
 
-        console.log('KEY: ' + req.param('key'));
-        console.log('PASS: ' + req.param('password'));
-        console.log('CON: ' + req.param('confirm'));
-
         if(!req.param('key') || !req.param('password') || !req.param('confirm')) {
             return res.render('account/message', { message: 'Error resetting password'});
         }
-        console.log('test');
+
         User.findOne({ passwordResetId: req.param('key')}, function(err, user) {
 
             if(err) {
@@ -131,7 +133,22 @@ module.exports = function(User) {
                 return res.render('account/pass_reset', { pass_key: req.param('key'), error_message: 'Passwords do not match' });
             }
 
+            var testResult = owasp.test(req.param('password'));
+            var errMsg = '';
+
+            if(testResult.errors.length > 0) {
+
+                for(var x = 0; x < testResult.errors.length; x++) {
+                    errMsg += testResult.errors[x] + '<br/>';
+                }
+
+                return res.render('account/pass_reset', { pass_key: req.param('key'), error_message: errMsg });
+
+            }
+
             user.password = encrypt.hashValue(req.param('password'), user.salt);
+            user.passwordResetExpires = undefined;
+            user.passwordResetId = undefined;
             user.save();
 
             return res.render('account/message', { message: 'Password reset. Please proceed to the <a href="/login">login page</a> to sign in.'})
@@ -145,6 +162,12 @@ module.exports = function(User) {
         var salt = encrypt.createSalt();
         var hash = encrypt.hashValue(req.body.password, salt);
         var confirmId = encrypt.createGuid();
+
+        var testResult = owasp.test(req.param('password'));
+
+        if(testResult.errors.length > 0) {
+            return res.status(400).json({ success: false, errors: testResult.errors })
+        };
 
         User.create({
             email: req.body.email,
@@ -162,7 +185,7 @@ module.exports = function(User) {
                 }
 
                 res.status(400);
-                return res.send({ success: false, message: err.message });
+                return res.send({ success: false, errors: [ err.message ] });
             }
 
             jade.renderFile('server/views/emails/confirmation.jade', { confirmation_link: 'http://auth.spaceshipsamurai.com/account/activate/' + confirmId }, function(err, text) {

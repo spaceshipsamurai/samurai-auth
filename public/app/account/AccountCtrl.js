@@ -2,10 +2,8 @@ angular.module('ssAuth').controller('AccountCtrl', ['$scope', '$location',
                                                     '$http', '$routeParams', '$window',
                                                     function($scope, $location, $http, $routeParams, $window) {
 
-    var redirect = $routeParams.cb;
-
     $scope.registrationComplete = function() {
-        return $routeParams.rc || false;
+        return $location.search('rc') || false;
     };
 
     $scope.isPath = function(path)
@@ -33,7 +31,7 @@ angular.module('ssAuth').controller('AccountCtrl', ['$scope', '$location',
 
         if($scope.password != $scope.repeatPassword)
         {
-            $scope.errorMessage = "Passwords do not match";
+            $scope.errors = ["Passwords do not match"];
             return;
         }
 
@@ -43,14 +41,14 @@ angular.module('ssAuth').controller('AccountCtrl', ['$scope', '$location',
         }).success(function() {
             $location.path('/login').search('rc', 'true');
         }).error(function(res) {
-            console.log(res);
-            var msg = res.message;
-            $scope.errorMessage = msg || "Invalid Registration Information";
+            var errors = res.errors;
+            console.log(errors);
+            $scope.errors = errors || ["Invalid Registration Information"];
         });;
     };
 
     $scope.clearError = function() {
-        delete $scope.errorMessage;
+        delete $scope.errors;
     };
 
 }]);

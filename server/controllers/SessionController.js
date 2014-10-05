@@ -18,7 +18,7 @@ exports.authenticate = function(req, res, next) {
 
         if(!user.confirmationDate) {
             res.status(403);
-            return res.send({success: false, message: 'Account inactive. Please make sure you clicked the activation link in the email.'})
+            return res.send({success: false, errors: [ 'Account inactive. Please make sure you clicked the activation link in the email.']})
         }
 
         req.logIn(user, function(err) {

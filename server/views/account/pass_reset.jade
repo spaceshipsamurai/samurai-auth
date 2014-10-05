@@ -15,7 +15,7 @@ html(lang="en")
                                 if error_message
                                     .alert.alert-dismissable.alert-danger
                                         button(type="button").close x
-                                        span #{ error_message }
+                                        span !{ error_message }
                                 form(role="form", action="/account/password/reset", method="post")
                                     .form-group
                                         label(for="pass") Password
