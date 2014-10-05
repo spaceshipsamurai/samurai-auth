@@ -3,7 +3,8 @@ angular.module('ssAuth').controller('AccountCtrl', ['$scope', '$location',
                                                     function($scope, $location, $http, $routeParams, $window) {
 
     $scope.registrationComplete = function() {
-        return false;
+        var params = $location.search();
+        return params.rc == 'true' || false;
     };
 
     $scope.isPath = function(path)

@@ -167,7 +167,7 @@ module.exports = function(User) {
 
         if(testResult.errors.length > 0) {
             return res.status(400).json({ success: false, errors: testResult.errors })
-        };
+        }
 
         User.create({
             email: req.body.email,
