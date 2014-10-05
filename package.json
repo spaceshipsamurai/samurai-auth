@@ -1,0 +1,27 @@
+{
+  "name": "SamuraiAuth",
+  "version": "0.0.1",
+  "description": "Samurai Authentication Services",
+  "main": "server.js",
+  "dependencies": {
+    "express": "~4.3.0",
+    "jade": "~1.3.1",
+    "passport": "~0.2.0",
+    "mongoose": "~3.8.10",
+    "passport-local": "~1.0.0",
+    "stylus": "~0.45.1",
+    "cookie-session": "~1.0.2",
+    "body-parser": "~1.2.0",
+    "neow": "latest",
+    "nodemailer": "~1.3.0",
+    "nodemailer-sendgrid-transport": "0.0.2"
+  },
+  "devDependencies": {
+    "morgan": "~1.1.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Russell Durham",
+  "license": "ISC"
+}

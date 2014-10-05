@@ -1,0 +1,76 @@
+var encrypt = require('../services/encryption');
+
+module.exports = function(mongoose) {
+
+    var userSchema = mongoose.Schema({
+        email: { type:String, required: 'Email is required', unique: 'Email already in use' },
+        password: { type:String, required: 'Password is required' },
+        salt: String,
+        dateCreated: {  type: Date, default: Date.now },
+        dateUpdated: { type: Date, default: Date.now },
+        lastSignIn: { type: Date, default: Date.now },
+        lastIP: String,
+        confirmationId: { type: String },
+        confirmationDate: { type: Date },
+        character:{
+            name: String,
+            isPrimary: Boolean,
+            corporation: {
+                id: Number,
+                name: String
+            },
+            alliance: {
+                id: Number,
+                name: String
+            },
+            id: Number
+        },
+        groups: [{
+            id: String,
+            name: String,
+            character: {
+                id: Number,
+                name: String
+            }
+        }]
+    });
+
+    userSchema.methods = {
+        authenticate: function(password) {
+            return encrypt.hashValue(password, this.salt) === this.password;
+        }
+    };
+
+    var User = mongoose.model('User', userSchema);
+
+    User.schema.path('email').validate(function(value) {
+        var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+        return emailRegex.test(value);
+    }, 'Invalid email address');
+
+    var createDefaultUsers = function() {
+        User.find({}).exec(function(err, collection){
+            if(collection.length === 0){
+
+                var salt, hash;
+
+                salt = encrypt.createSalt();
+                hash = encrypt.hashValue('test', salt);
+                User.create({
+                    email: 'test@example.com',
+                    password: hash,
+                    salt: salt,
+                    lastIP: '127.0.0.1'
+                });
+            }
+        });
+    };
+
+    return {
+        createDefaultUsers: createDefaultUsers
+    }
+
+};
+
+
+

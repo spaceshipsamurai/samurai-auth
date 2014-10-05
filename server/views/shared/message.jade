@@ -1,0 +1,14 @@
+doctype html
+html(lang="en")
+    head
+        include admin_head
+    body.fixed-header.smart-style-1.bg-war-room
+        div
+            .container(ng-controller="AccountCtrl")
+                .row
+                    .col-md-6.col-md-offset-3
+                        .panel.panel-primary(style="margin-top: 30%", id="login-panel")
+                            .panel-heading
+                                h3.panel-title Spaceship Samurai Auth System
+                            .panel-body
+                                | !{ message }

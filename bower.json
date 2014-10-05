@@ -1,0 +1,28 @@
+{
+  "name": "SamuraiAuth",
+  "version": "0.0.1",
+  "authors": [
+    "Russell Durham <rdurham1007@gmail.com>"
+  ],
+  "description": "Samurai Authentication Services",
+  "main": "server.js",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1",
+    "toastr": "~2.0.1",
+    "angular": "~1.2.14",
+    "angular-resource": "~1.2.14",
+    "angular-route": "~1.2.14",
+    "bootstrap": "~3.1.1",
+    "angular-ui-router": "~0.2.10",
+    "angular-cookies": "~1.2.25"
+  }
+}

@@ -1,0 +1,48 @@
+doctype html
+html(lang="en")
+    head
+        include shared/admin_head
+    body(ng-app="ssAuth").fixed-header.smart-style-1.bg-war-room
+        div
+            .container(ng-controller="AccountCtrl")
+                .row
+                    .col-md-6.col-md-offset-3
+                        .panel.panel-primary(style="margin-top: 30%", id="login-panel")
+                            .panel-heading
+                                h3.panel-title Spaceship Samurai Auth System
+                            .panel-body
+                                .alert.alert-dismissable.alert-danger(ng-show="errorMessage")
+                                    button(type="button", ng-click="clearError()").close x
+                                    span {{ errorMessage }}
+                                .alert.alert-dismissable.alert-success(ng-show="registrationComplete()")
+                                    button(type="button", ng-click="clearError()").close x
+                                    span Registration Successfull
+                                ul.nav.nav-tabs(style="margin-bottom: 15px")
+                                    li(ng-class="{ active: isPath('/login')}")
+                                        a(ng-href="/login") Login
+                                    li(ng-class="{ active: isPath('/register')}")
+                                        a(ng-href="/register") Register
+                                div(ng-show="isPath('/login')")
+                                    form(role="form")
+                                        .form-group
+                                            label(for="email") Email
+                                            input#email.form-control(type="text", placeholder="email", ng-model="email")
+                                        .form-group
+                                            label(for="password") Password
+                                            input#password.form-control(type="password", placeholder="password", ng-model="password")
+                                        .pull-right
+                                            button.btn.btn-primary(ng-click="login()") Login
+                                div(ng-show="isPath('/register')")
+                                    form(role="form")
+                                        .form-group
+                                            label(for="email") Email
+                                            input#email.form-control(type="text", placeholder="email", ng-model="email")
+                                        .form-group
+                                            label(for="password") Password
+                                            input#password.form-control(type="password", placeholder="password", ng-model="password")
+                                        .form-group
+                                            label(for="repeatPass") Repeat Password
+                                            input#repeatPass.form-control(type="password", placeholder="password", ng-model="repeatPassword")
+                                        .pull-right
+                                            button.btn.btn-primary(ng-click="register()") Register
+        include shared/admin_scripts
