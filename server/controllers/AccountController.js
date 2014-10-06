@@ -170,7 +170,7 @@ module.exports = function(User) {
         }
 
         User.create({
-            email: req.body.email,
+            email: req.body.email.toLowerCase(),
             password: hash,
             salt: salt,
             lastIP: '127.0.0.1',
