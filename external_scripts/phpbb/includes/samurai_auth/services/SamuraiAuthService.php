@@ -13,6 +13,8 @@ class SamuraiAuthService {
     public function Authenticate($username, $password) {
         
         $user = $this -> _userRepo -> getUser($username);
+        $password = urldecode($password);
+
 
         if(!is_array($user)) {
             //no user found

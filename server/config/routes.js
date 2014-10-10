@@ -1,5 +1,4 @@
-var config = require('./config').getConfig(),
-    mailer = require('../services/mailer')();
+var config = require('./config').getConfig();
 
 module.exports = function(app) {
 

@@ -1,4 +1,5 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    logger = require('./logger');
 
 
 module.exports = function(config) {
@@ -13,7 +14,7 @@ module.exports = function(config) {
     var userModel = require('../models/User')(mongoose);
 
     db.on("error", function(errorObject){
-        console.log(errorObject);
+        logger.log(logger.level.critical, errorObject);
     });
 
     db.once('open', function() {

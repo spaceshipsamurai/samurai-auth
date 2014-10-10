@@ -1,7 +1,8 @@
 var encrypt = require('../services/encryption'),
-    mailer = require('../services/mailer')(),
+    mailer = require('../config/mailer'),
     jade = require('jade'),
-    owasp = require('owasp-password-strength-test');
+    owasp = require('owasp-password-strength-test'),
+    logger = require('../config/logger');
 
 module.exports = function(User) {
 
@@ -11,6 +12,9 @@ module.exports = function(User) {
         minLength: 8,
         minPhraseLength: 20
     });
+
+    //remove the special character test
+    owasp.tests.optional.splice(3, 1);
 
     var showLogin = function(req, res) {
         res.render('login');
@@ -23,7 +27,7 @@ module.exports = function(User) {
         User.findOne({ confirmationId: id }, function(err, user){
 
             if(err) {
-                console.log(err);
+                logger.log(logger.level.critical, err);
                 return res.render('account/message', { message: 'Invalid activation key. Please contact administrator.'});
             }
 
@@ -55,7 +59,7 @@ module.exports = function(User) {
             User.findOne({ email: email }, function(err, user) {
 
                 var resetTime = new Date();
-                resetTime.setTime(resetTime.getMinutes() + 30);
+                resetTime.setMinutes(resetTime.getMinutes() + 30);
 
                 user.passwordResetId = encrypt.createGuid();
                 user.passwordResetExpires = resetTime;
@@ -64,7 +68,7 @@ module.exports = function(User) {
                 jade.renderFile('server/views/emails/passreset.jade', { reset_link: 'http://auth.spaceshipsamurai.com/account/password/reset/' + user.passwordResetId }, function(err, text) {
 
                     if(err) {
-                        console.log(err);
+                        logger.log(logger.level.critical, err);
                     }
                     else {
 
@@ -97,6 +101,11 @@ module.exports = function(User) {
 
         User.findOne({ passwordResetId: req.params.id }, function(err, user) {
 
+            if(err) {
+                logger.log(logger.level.critical, err);
+            }
+
+
             if(err || !user) {
                 return res.render('account/message', { message: 'Invalid/Expired password reset link'});
             }
@@ -121,7 +130,7 @@ module.exports = function(User) {
         User.findOne({ passwordResetId: req.param('key')}, function(err, user) {
 
             if(err) {
-                console.log(err);
+                logger.log(logger.level.critical, err);
                 return res.render('account/message', { message: 'Error resetting password'});
             }
 
@@ -191,7 +200,7 @@ module.exports = function(User) {
             jade.renderFile('server/views/emails/confirmation.jade', { confirmation_link: 'http://auth.spaceshipsamurai.com/account/activate/' + confirmId }, function(err, text) {
 
                 if(err) {
-                    console.log(err);
+                    logger.log(logger.level.critical, err);
                 }
                 else {
 
@@ -201,10 +210,6 @@ module.exports = function(User) {
                         to: req.body.email,
                         subject: 'Account Confirmation',
                         text: text
-                    }, function(err) {
-                        if(err) {
-                            console.log(err);
-                        }
                     });
 
                 }

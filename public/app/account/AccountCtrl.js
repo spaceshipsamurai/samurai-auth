@@ -23,7 +23,7 @@ angular.module('ssAuth').controller('AccountCtrl', ['$scope', '$location',
             if(data.errors)
                 $scope.errors = data.errors;
             else
-                $scope.errorMessage = "Invalid Username/Password";
+                $scope.errors = ["Invalid Username/Password"];
 
         });
     };
