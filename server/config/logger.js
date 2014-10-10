@@ -4,7 +4,7 @@ var loggly = require('loggly'),
 var client = undefined;
 
 if(config.getEnvironment() === 'production') {
-    client = loggly.createClient(config.loggly);
+    client = loggly.createClient(config.getConfig().loggly);
 }
 
 exports.log = function(level, msg, tags) {
