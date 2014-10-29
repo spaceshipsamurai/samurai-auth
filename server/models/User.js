@@ -16,7 +16,6 @@ module.exports = function(mongoose) {
         passwordResetExpires: { type: Date },
         character:{
             name: String,
-            isPrimary: Boolean,
             corporation: {
                 id: Number,
                 name: String
@@ -30,10 +29,10 @@ module.exports = function(mongoose) {
         groups: [{
             id: String,
             name: String,
-            character: {
+            characters: [{
                 id: Number,
                 name: String
-            }
+            }]
         }]
     });
 

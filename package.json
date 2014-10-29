@@ -15,10 +15,12 @@
     "neow": "latest",
     "owasp-password-strength-test": "~1.1.0",
     "loggly": "~1.0.5",
-    "sendgrid": "~1.2.0"
+    "sendgrid": "~1.2.0",
+    "bluebird": "~2.3.10"
   },
   "devDependencies": {
-    "morgan": "~1.1.1"
+    "morgan": "~1.1.1",
+    "chai": "~1.9.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

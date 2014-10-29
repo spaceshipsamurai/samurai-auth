@@ -2,15 +2,7 @@ angular.module('ssAuth', ['ngRoute', 'ui.router', 'ngCookies']);
 angular.module('ssAuth').config(['$locationProvider', '$stateProvider', '$httpProvider', function($locationProvider, $stateProvider, $httpProvider) {
     $locationProvider.html5Mode(true);
 
-    $stateProvider.state('login', {
-        url: '/login',
-        templateUrl: 'templates/login',
-        controller: 'AccountCtrl'
-    }).state('register', {
-        url: '/register',
-        templateUrl: 'templates/login',
-        controller: 'AccountCtrl'
-    }).state('dashboard', {
+    $stateProvider.state('dashboard', {
         url: '/',
         templateUrl: 'templates/dashboard/index',
         controller: 'HomeCtrl',
