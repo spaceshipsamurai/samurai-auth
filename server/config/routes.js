@@ -3,6 +3,11 @@ var config = require('./config').getConfig();
 module.exports = function(app) {
 
 
+    app.get('/', function(req, res){
+        console.log('home');
+        return res.json({ message: 'success' });
+    });
+
     //for authentication
     var authFunction = function(req, res, next) {
 

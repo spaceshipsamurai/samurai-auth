@@ -4,8 +4,6 @@ var mongoose = require('mongoose'),
 
 module.exports = function(config) {
 
-
-
     mongoose.connect(config.mongoDb);
     var db = mongoose.connection;
 
@@ -21,7 +19,5 @@ module.exports = function(config) {
         console.log('Mono DB connection open...');
         userModel.createDefaultUsers();
     });
-
-
 
 };

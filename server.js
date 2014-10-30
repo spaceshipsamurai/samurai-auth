@@ -10,5 +10,10 @@ require('./server/config/express')(app, config);
 require('./server/config/routes')(app);
 require('./server/config/passport')();
 
-app.listen(config.port);
-console.log('Server started listening on port ' + config.port);
+exports.app = app;
+
+if(env != 'testing')
+{
+    app.listen(config.port);
+    console.log('Server started listening on port ' + config.port);
+}

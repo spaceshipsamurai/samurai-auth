@@ -14,7 +14,6 @@ module.exports = function (app, config) {
 
     app.set('views', config.rootPath + '/server/views');
     app.set('view engine', 'jade');
-    app.use(logger());
     app.use(session({ keys: config.sessionKeys }));
     app.use(bodyParser());
     app.use(passport.initialize());
@@ -23,6 +22,11 @@ module.exports = function (app, config) {
         src: config.rootPath + '/public',
         compile: compile
     }));
+
+    if(process.env.NODE_ENV === 'development')
+    {
+        app.use(logger());
+    }
 
     app.use(express.static(config.rootPath + '/public'));
 

@@ -47,7 +47,7 @@ exports.create = function(group){
                 }
                 else
                 {
-                    Logger.log(Logger.level.critical, 'Error saving group: ' + JSON.stringify(group), ['auth', 'create group', 'db']);
+                    Logger.log(Logger.level.critical, 'Error saving group: ' + JSON.stringify(group) + '\n' + err, ['auth', 'group', 'db']);
                     return reject(err);
                 }
             }
@@ -56,5 +56,50 @@ exports.create = function(group){
 
         });
     });
+};
 
+exports.submitApplication = function(application) {
+    return new Promise(function(resolve, reject){
+
+        Group.findOne({_id: application.groupId }, function(err, group){
+
+            if(err)
+            {
+                Logger.log(Logger.level.critical, 'Error saving group application: ' + JSON.stringify(application) + '\n' + err, ['auth', 'group', 'db']);
+                return reject(err);
+            }
+
+            if(!group)
+            {
+                return reject('No group found for group ID: ' + application.groupId);
+            }
+
+            if(!group.members)
+            {
+                group.members = [];
+            }
+
+            group.members.push({
+                userId: application.userId,
+                characters: [{
+                    characterId: application.character.id,
+                    characterName: application.character.name,
+                    appliedDate: new Date()
+                }],
+                status: 'Pending'
+            });
+
+            group.save(function(err) {
+
+                if(err)
+                {
+                    Logger.log(Logger.level.critical, 'Error saving group application: ' + JSON.stringify(application) + '\n' + err, ['auth', 'group', 'db']);
+                    return reject(err);
+                }
+
+                resolve();
+            });
+
+        });
+    });
 };
