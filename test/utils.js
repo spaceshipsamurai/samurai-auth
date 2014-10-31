@@ -2,8 +2,13 @@
 // this is helpful when you would like to change behavior when testing
 process.env.NODE_ENV = 'testing';
 
+require('../server/models/Group');
+require('../server/models/Key');
+require('../server/models/User');
+
 var mongoose = require('mongoose'),
-    config = require('../server/config/config')[process.env.NODE_ENV];
+    config = require('../server/config/config')[process.env.NODE_ENV],
+    Promise = require('bluebird');
 
 before(function(done){
 
@@ -34,3 +39,15 @@ function clearDB() {
         mongoose.connection.collections[i].drop();
     }
 }
+
+exports.createModel = function(type, model) {
+
+    var Model = mongoose.model(type);
+
+    return new Promise(function(resolve, reject){
+        Model.create(model, function(err, savedModel){
+            if(err) reject(err);
+            resolve(savedModel);
+        })
+    });
+};

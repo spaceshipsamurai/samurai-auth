@@ -80,12 +80,9 @@ exports.submitApplication = function(application) {
             }
 
             group.members.push({
-                userId: application.userId,
-                characters: [{
-                    characterId: application.character.id,
-                    characterName: application.character.name,
-                    appliedDate: new Date()
-                }],
+                characterId: application.character.id,
+                characterName: application.character.name,
+                appliedDate: new Date(),
                 status: 'Pending'
             });
 
@@ -100,6 +97,44 @@ exports.submitApplication = function(application) {
                 resolve();
             });
 
+        });
+    });
+};
+
+exports.approveMember = function(approval) {
+    return new Promise(function(resolve, reject){
+
+        Group.update({ _id: approval.groupId, 'members.characterId': approval.characterId },
+            {
+                $set: {
+                    'members.$.status': 'Member',
+                    'members.$.approvedBy': approval.approvedBy,
+                    'members.$.approvedDate': new Date()
+                }
+            },
+            function(err) {
+
+                if (err) {
+                    Logger.log(Logger.level.critical, 'Error approving member: ' + JSON.stringify(approval) + '\n' + err, ['auth', 'group', 'db']);
+                    return reject(err);
+                }
+
+                resolve();
+            }
+        );
+    });
+};
+
+exports.removeMember = function(groupId, characterId) {
+    return new Promise(function(resolve, reject){
+        Group.update({_id: groupId }, { $pull: {'members': { characterId: characterId }}}, function(err) {
+
+            if (err) {
+                Logger.log(Logger.level.critical, 'Error removing member: ' + err, ['auth', 'group', 'db']);
+                return reject(err);
+            }
+
+            resolve();
         });
     });
 };

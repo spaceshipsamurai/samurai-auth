@@ -7,8 +7,10 @@ module.exports = function(config) {
     mongoose.connect(config.mongoDb);
     var db = mongoose.connection;
 
-    //load our modules
-    require('../models/Key')(mongoose);
+    //load our models
+    require('../models/Key');
+    require('../models/Group');
+
     var userModel = require('../models/User')(mongoose);
 
     db.on("error", function(errorObject){

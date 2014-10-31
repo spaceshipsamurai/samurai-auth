@@ -8,14 +8,11 @@ var groupSchema = mongoose.Schema({
     createdDate: { type: Date, required: 'Created Date is required' },
     createdBy: { type: Schema.ObjectId, ref: 'User', required: 'Created By is required'},
     members: [{
-        userId: { type: Schema.ObjectId, ref: 'User' },
-        characters: [{
-            characterId: Number,
-            characterName: String,
-            approvedDate: Date,
-            approvedBy: Schema.ObjectId,
-            appliedDate: Date
-        }],
+        characterId: Number,
+        characterName: String,
+        approvedDate: Date,
+        approvedBy: Schema.ObjectId,
+        appliedDate: Date,
         status: { type: String, enum: ['Pending', 'Member', 'Manager', 'Owner', 'Probation']}
     }]
 });

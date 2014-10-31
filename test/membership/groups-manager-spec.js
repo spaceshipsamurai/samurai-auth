@@ -74,8 +74,8 @@ describe('applying to group', function(){
 
         });
 
-        it('should add the user as a member', function(done){
-            expect(member.userId).to.eql(user._id);
+        it('should add the character as a member', function(done){
+            expect(member.characterId).to.eql(character.id);
             done();
         });
 
@@ -84,55 +84,22 @@ describe('applying to group', function(){
             done();
         });
 
-        it('should add the character to the list of characters', function(done){
-            expect(member.characters).to.be.a('array');
-            expect(member.characters).to.have.length(1);
-
-            var givenChar = member.characters[0];
-
-            expect(givenChar.characterId).to.equal(1);
-            expect(givenChar.characterName).to.equal('Test Char');
-            done();
-        });
-
         it('should set the applied date for the character', function(done){
-            expect(member.characters).to.be.a('array');
-            expect(member.characters).to.have.length(1);
-
-            var givenChar = member.characters[0];
-
-            expect(givenChar.appliedDate).to.exist;
-            expect(givenChar.appliedDate).to.be.a('Date');
-
-            var diff = (new Date()).getTime() - givenChar.appliedDate.getTime();
-
+            expect(member.appliedDate).to.exist;
+            expect(member.appliedDate).to.be.a('Date');
+            var diff = (new Date()).getTime() - member.appliedDate.getTime();
             expect(diff).to.be.below(1000);
-
             done();
         });
 
         it('should have the approved date as undefined', function(done){
-            expect(member.characters).to.be.a('array');
-            expect(member.characters).to.have.length(1);
-
-            var givenChar = member.characters[0];
-
-            expect(givenChar.approvedDate).to.not.exist;
-
+            expect(member.approvedDate).to.not.exist;
             done();
-
         });
 
         it('should have the approved by as undefined', function(done){
-            expect(member.characters).to.be.a('array');
-            expect(member.characters).to.have.length(1);
-
-            var givenChar = member.characters[0];
-
-            expect(givenChar.approvedBy).to.not.exist;
-
+            expect(member.approvedBy).to.not.exist;
             done();
-
         });
 
     });
@@ -191,27 +158,102 @@ describe('creating a group', function(){
 
 describe('accepting a member', function() {
 
-    it('should change the user\'s status to \'Member\'');
-    it('should set approved by');
-    it('should set approved date');
+    var group = {
+            name: 'Test Group',
+            createdBy: mongoose.Types.ObjectId(),
+            createdDate: new Date(),
+            members: [{
+                characterId: 1,
+                characterName: "Test Character",
+                appliedDate: new Date(),
+                status: 'Pending'
+            }]
+    }, approval, member;
 
-});
+    before(function(done){
+        var newGroup = new GroupModel(group);
+        newGroup.save(function(err, savedGroup){
 
-describe('removing a member', function() {
-    it('should remove the user from the list of members');
+            group = savedGroup.toObject();
+            approval = {
+                groupId: group._id,
+                characterId: 1,
+                characterName: 'Test Character',
+                approvedBy: mongoose.Types.ObjectId()
+            };
+
+            Groups.approveMember(approval).then(function(){
+
+                GroupModel.findOne({ _id: group._id }, function(err, testGroup) {
+                    member = testGroup.members[0];
+                    done();
+                });
+
+            });
+        });
+    });
+
+    it('should change the user\'s status to \'Member\'', function(done){
+        expect(member.status).to.equal('Member');
+        done();
+    });
+
+    it('should set approved by', function(done) {
+
+        expect(member.approvedBy).to.exist;
+        expect(member.approvedBy).to.eql(approval.approvedBy);
+        done();
+
+    });
+
+    it('should set approved date', function(done){
+        expect(member.approvedDate).to.exist;
+        var diff = (new Date()).getTime() - member.approvedDate.getTime();
+        expect(diff).to.be.below(500)
+        done();
+    });
+
 });
 
 describe('removing a character', function(){
 
-    describe('when it is the last character', function() {
-        it('should remove the user from the list of members')
+    var group = {
+        name: 'Test Group',
+        createdBy: mongoose.Types.ObjectId(),
+        createdDate: new Date(),
+        members: [{
+            characterId: 1,
+            characterName: "Test Character",
+            appliedDate: new Date(),
+            status: 'Pending'
+        },
+        {
+            characterId: 2,
+            characterName: "Test Character2",
+            appliedDate: new Date(),
+            status: 'Pending'
+        }]
+    };
+
+    before(function(done){
+        var newGroup = new GroupModel(group);
+        newGroup.save(function(err, savedGroup){
+            group = savedGroup.toObject();
+            Groups.removeMember(group._id, 1)
+                .then(function(){
+                    GroupModel.findOne({_id: group._id}, function(err, updatedGroup){
+                        group = updatedGroup;
+                        done();
+                    });
+                });
+        });
     });
 
-    describe('when remaining character(s) have invalid keys', function(){
-        it('should set the status to \'Probation\'');
+    it('should remove only the specified character from the members list', function(done) {
+        expect(group.members).to.have.length(1);
+        expect(group.members[0]).to.not.equal(1);
+        done();
     });
-
-    it('should remove the character from the characters list');
 
 
 });
