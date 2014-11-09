@@ -1,4 +1,5 @@
-var passport = require('passport');
+var passport = require('passport'),
+    GroupManager = require('../services/membership/GroupManager');
 
 exports.authenticate = function(req, res, next) {
 
@@ -34,19 +35,24 @@ exports.authenticate = function(req, res, next) {
 exports.getCurrentUser = function(req, res) {
 
     var user = {};
-    console.log(JSON.stringify(req.user, undefined, 2));
 
     if(req.user)
     {
         user.email = req.user.email;
-        user.groups = req.user.groups;
+        user.character = req.user.character;
     }
 
-    res.send(user);
-}
+    GroupManager.getGroupsByUser(req.user._id).then(function(groups){
+        user.groups = groups;
+        res.send(user);
+    }).error(function(err){
+        res.send(user);
+    });
+
+};
 
 exports.logout = function(req, res) {
     req.logout();
     res.clearCookie('ag-user');
     res.redirect('/login');
-}
+};

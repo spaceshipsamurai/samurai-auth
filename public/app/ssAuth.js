@@ -1,22 +1,20 @@
 angular.module('ssAuth', ['ngRoute', 'ui.router', 'ngCookies']);
 angular.module('ssAuth').config(['$locationProvider', '$stateProvider', '$httpProvider', function($locationProvider, $stateProvider, $httpProvider) {
+
     $locationProvider.html5Mode(true);
 
     $stateProvider.state('dashboard', {
         url: '/',
         templateUrl: 'templates/dashboard/index',
-        controller: 'HomeCtrl',
-        access: { requiresAuth: true }
+        controller: 'HomeCtrl'
     }).state('keys', {
         url: '/keys',
         templateUrl: 'templates/keys/list',
-        controller: 'KeyCtrl',
-        access: { requiresAuth: true }
+        controller: 'KeyCtrl'
     }).state('services', {
         url: '/services',
         templateUrl: 'templates/services/list',
-        controller: 'ServicesCtrl',
-        access: { requiresAuth: true }
+        controller: 'ServicesCtrl'
     });
 
     var unauthorizedInterceptor = ['$location', '$q', function($location, $q) {
@@ -27,7 +25,7 @@ angular.module('ssAuth').config(['$locationProvider', '$stateProvider', '$httpPr
         }
 
         function error(response) {
-
+            console.log(response.status);
             if(response.status === 401){
                 $location.path('/login');
 
@@ -48,17 +46,23 @@ angular.module('ssAuth').config(['$locationProvider', '$stateProvider', '$httpPr
 
 }]);
 
-angular.module('ssAuth').run(function($rootScope, $state, UserService, $location){
+angular.module('ssAuth').run(function($rootScope, $state, SessionService){
 
-    UserService.loadUserFromCookie();
+    $rootScope.currentUser = SessionService.restore();
 
-    $rootScope.$on('$stateChangeStart', function(e, toState, toParams, fromState, fromParams) {
+    $rootScope.isMemberOf = function(group) {
 
-       if((toState.access && toState.access.requiresAuth) && !UserService.isAuthenticated)
-       {
-           //e.preventDefault();
-           //console.log('NOT AUTHORIZED');
-           //window.location = '/login'
-       }
+        if(!$rootScope.currentUser.groups) return false;
+
+        return $rootScope.currentUser.groups[group];
+    };
+
+    $rootScope.$on('$stateChangeStart',
+        function(event, toState, toParams, fromState, fromParams){
+            SessionService.getCurrentUser().then(function(user){
+                $rootScope.currentUser = user;
+            });
     });
+
+
 });

@@ -1,6 +1,8 @@
-angular.module('ssAuth').controller('ServicesCtrl', ['CharacterService', 'UserService', '$scope', function(CharacterService, UserService, $scope){
+angular.module('ssAuth').controller('ServicesCtrl', ['CharacterService', 'SessionService', '$scope', function(CharacterService, SessionService, $scope){
 
-    $scope.primaryCharacter = UserService.CurrentUser.character;
+    SessionService.getCurrentUser().then(function(user){
+        $scope.primaryCharacter = user.character;
+    });
 
     CharacterService.getByUserId().then(function(characters){
         $scope.characters = characters;
@@ -8,7 +10,7 @@ angular.module('ssAuth').controller('ServicesCtrl', ['CharacterService', 'UserSe
 
     $scope.setPrimary = function(characterId) {
         CharacterService.updatePrimaryCharacter(characterId).then(function(){
-            UserService.fetchUser().then(function(user){
+            SessionService.getCurrentUser(true).then(function(user){
                 $scope.primaryCharacter = user.character;
             });
         });

@@ -11,15 +11,18 @@ module.exports = function(config) {
     require('../models/Key');
     require('../models/Group');
 
-    var userModel = require('../models/User')(mongoose);
+    var userModel = require('../models/User');
 
     db.on("error", function(errorObject){
         logger.log(logger.level.critical, errorObject);
     });
 
+    var GroupManager = require('../services/membership/GroupManager');
+
     db.once('open', function() {
         console.log('Mono DB connection open...');
-        userModel.createDefaultUsers();
+        //userModel.createDefaultUsers();
+        GroupManager.seedGroups();
     });
 
 };

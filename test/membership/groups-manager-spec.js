@@ -1,4 +1,4 @@
-var util = require('../utils'),
+var utils = require('../utils'),
     expect = require('chai').expect,
     mongoose = require('mongoose'),
     Promise = require('bluebird'),
@@ -21,7 +21,6 @@ describe("get groups", function(){
     it("should always contain the admin group", function() {
         expect(groups).to.have.length(1);
     });
-
 });
 
 describe('applying to group', function(){
@@ -255,5 +254,126 @@ describe('removing a character', function(){
         done();
     });
 
+});
+
+describe('validating group membership', function() {
+
+    var group = {
+        name: 'Test Group',
+        createdBy: mongoose.Types.ObjectId(),
+        createdDate: new Date(),
+        members: [{
+            characterId: 1,
+            characterName: "Test Character",
+            appliedDate: new Date(),
+            status: 'Pending'
+        },
+            {
+                characterId: 4,
+                characterName: "Test Character2",
+                appliedDate: new Date(),
+                status: 'Member'
+            }]
+    }, key;
+
+
+    before(function(done){
+        utils.createModel('Key', {
+            userId: mongoose.Types.ObjectId(),
+            keyId: '1',
+            status: 'Valid',
+            characters: [{
+                id: 1
+            },{
+                id: 2
+            }]
+        }).then(function(key) {
+            return utils.createModel('Key', {
+                userId: key.userId,
+                keyId: '2',
+                status: 'Expired',
+                characters: [{
+                    id: 4
+                },{
+                    id: 5
+                }]
+            })
+        }).then(function(savedKey){
+            key = savedKey;
+            return utils.createModel('Group', group);
+        }).then(function(savedGroup){
+            group = savedGroup;
+            done();
+        });
+    });
+
+    describe('when user is authorized', function() {
+        it('should return result with authorized set to true', function(done) {
+            Groups.isGroupMember(group._id, key.userId)
+                .then(function(result){
+                    expect(result).to.exist;
+                    expect(result.authorized).to.be.true;
+                    done();
+                }).catch(function(err){
+                    done(err);
+                });
+        });
+    });
+});
+
+
+describe('get groups by userid', function(){
+
+    var group = {
+        name: 'Test Group',
+        createdBy: mongoose.Types.ObjectId(),
+        createdDate: new Date(),
+        members: [{
+            characterId: 1,
+            characterName: "Test Character",
+            appliedDate: new Date(),
+            status: 'Pending'
+        },
+            {
+                characterId: 4,
+                characterName: "Test Character2",
+                appliedDate: new Date(),
+                status: 'Member'
+            }]
+    }, key;
+
+
+    before(function(done){
+
+        utils.createModel('Key', {
+            userId: mongoose.Types.ObjectId(),
+            keyId: '1',
+            status: 'Valid',
+            characters: [{
+                id: 1
+            },{
+                id: 4
+            }]
+        }).then(function(savedKey){
+            key = savedKey;
+            group.members[1].userId = savedKey.userId;
+            return utils.createModel('Group', group);
+        }).then(function(savedGroup){
+            group = savedGroup;
+            done();
+        });
+    });
+
+    it('should only return the users groups', function(done){
+
+        Groups.getGroupsByUser(key.userId).then(function(groups){
+            expect(groups).to.be.a('Object');
+            expect(groups['Test Group']).to.exist;
+            expect(groups['Test Group'].name).to.equal('Test Group');
+            done();
+        }).catch(function(err){
+            done(err);
+        });
+    });
 
 });

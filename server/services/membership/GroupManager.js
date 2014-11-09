@@ -1,6 +1,9 @@
-var Group = require('../../models/Group'),
+var mongoose = require('mongoose'),
+    Group = mongoose.model('Group'),
+    User = mongoose.model('User'),
     Promise = require('bluebird'),
-    Logger = require('../../config/logger');
+    Logger = require('../../config/logger'),
+    Key = mongoose.model('Key');
 
 var defaultGroups = [
     {
@@ -136,5 +139,79 @@ exports.removeMember = function(groupId, characterId) {
 
             resolve();
         });
+    });
+};
+
+exports.getGroupsByUser = function(userId) {
+
+    return new Promise(function(resolve, reject){
+
+        Key.find({userId: userId, status: 'Valid'}, function(err, keys){
+
+           var characters = [];
+
+            for(var x = 0; x < keys.length; x++)
+            {
+                for(var y = 0; y < keys[x].characters.length; y++)
+                {
+                    characters.push(keys[x].characters[y].id);
+                }
+            }
+
+            Group.find({'members.userId': userId, 'members.characterId': { $in: characters }}, 'name _id', function(err, groups){
+
+                var obj = groups.reduce(function(o, v) {
+                    o[v.name] = v;
+                    return o;
+                }, {});
+
+                resolve(obj);
+            });
+
+        });
+    });
+
+};
+
+exports.isGroupMember = function(groupId, userId){
+    return new Promise(function(resolve, reject){
+
+        Key.aggregate(
+            { $match: { userId: userId, status: 'Valid' }},
+            { $unwind: '$characters' },
+            { $group: { _id: '$userId', characters: { $push: '$characters.id' }}},
+            { $project: { userId: '$_id', 'characters': 1, _id: 0 }},
+            function(err, result) {
+
+                if(err)
+                {
+                    Logger.log(Logger.level.critical, 'Error with key aggregate: ' + '\n' + err, ['auth', 'acl', 'db']);
+                    return reject(err);
+                }
+
+
+                Group.aggregate(
+                    { $match: { _id: groupId }},
+                    { $unwind: '$members' },
+                    { $match: { 'members.characterId': { $in: result[0].characters}}},
+                    { $group: { _id: '$_id', members: { $push: '$members' }}},
+                    function(err, groupResult) {
+
+                        if(err)
+                        {
+                            Logger.log(Logger.level.critical, 'Error with group aggregate: ' + '\n' + err, ['auth', 'acl', 'db']);
+                            return reject(err);
+                        }
+
+                        resolve({
+                            authorized: groupResult[0].members.length > 0,
+                            characters: groupResult[0].members
+                        });
+                    }
+                )
+
+            }
+
+        );
     });
 };

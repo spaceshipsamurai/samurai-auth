@@ -15,14 +15,20 @@ before(function(done){
     if(mongoose.connection.readyState === 0)
     {
         mongoose.connect('mongodb://localhost/SamuraiAuth_Test', function(){
-            clearDB();
-            done();
+            mongoose.connection.db.dropDatabase(function(){
+                collections.clearAll().then(function(){
+                    done()
+                });
+            });
         });
     }
     else
     {
-        clearDB();
-        done();
+        mongoose.connection.db.dropDatabase(function(){
+            collections.clearAll().then(function(){
+                done()
+            });
+        });
     }
 
 
@@ -34,11 +40,33 @@ after(function(done){
     done();
 });
 
-function clearDB() {
-    for (var i in mongoose.connection.collections) {
-        mongoose.connection.collections[i].drop();
-    }
-}
+var collections = function(){
+
+    var clearAll = function() {
+        var promises = [];
+
+        promises.push(clear('keys'));
+        promises.push(clear('users'));
+        promises.push(clear('groups'));
+
+        return Promise.all(promises);
+    };
+
+    var clear = function(collectionName) {
+        return new Promise(function(resolve, reject){
+            mongoose.connection.collections[collectionName].drop(resolve, reject);
+        });
+    };
+
+    return {
+        clearAll: clearAll,
+        clear: clear
+    };
+
+}();
+
+
+exports.collections = collections;
 
 exports.createModel = function(type, model) {
 

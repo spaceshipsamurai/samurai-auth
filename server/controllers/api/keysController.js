@@ -38,6 +38,7 @@ module.exports = function() {
             newKey.type = result.key.type;
             newKey.expires = result.key.expires;
             newKey.characters = [];
+            newKey.status = 'Valid';
 
             for(var cid in result.key.characters)
             {
@@ -68,8 +69,6 @@ module.exports = function() {
     };
 
     var remove = function(req, res) {
-
-        var isPrimary = false;
 
         Key.findOne({ keyId: req.params.keyId }, function(err, key) {
 

@@ -1,4 +1,4 @@
-angular.module('ssAuth').factory('KeyService', ['$http', '$q', 'UserService', function($http, $q, $userService){
+angular.module('ssAuth').factory('KeyService', ['$http', '$q', 'SessionService', function($http, $q){
 
     var getKeys = function() {
 
@@ -27,7 +27,6 @@ angular.module('ssAuth').factory('KeyService', ['$http', '$q', 'UserService', fu
         var deferred = $q.defer();
 
         $http.delete('/api/keys/' + keyId).success(function() {
-            $userService.fetchUser();
             deferred.resolve();
         });
 

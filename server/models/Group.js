@@ -8,6 +8,7 @@ var groupSchema = mongoose.Schema({
     createdDate: { type: Date, required: 'Created Date is required' },
     createdBy: { type: Schema.ObjectId, ref: 'User', required: 'Created By is required'},
     members: [{
+        userId: Schema.ObjectId,
         characterId: Number,
         characterName: String,
         approvedDate: Date,

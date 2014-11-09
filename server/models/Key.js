@@ -10,6 +10,8 @@ var keySchema = mongoose.Schema({
     keyType: String,
     expires: Date,
     lastCheck: Date,
+    status: { type: String, enum: ['Valid', 'Expired', 'Error']},
+    lastResponse: String,
     characters: [{
         _id: false,
         name: String,
