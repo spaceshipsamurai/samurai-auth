@@ -3,7 +3,8 @@ var encrypt = require('../services/encryption'),
     jade = require('jade'),
     owasp = require('owasp-password-strength-test'),
     logger = require('../config/logger'),
-    path = require('path');
+    path = require('path'),
+    config = require('../config/config').getConfig();
 
 module.exports = function(User) {
 
@@ -66,7 +67,7 @@ module.exports = function(User) {
                 user.passwordResetExpires = resetTime;
                 user.save();
 
-                jade.renderFile(path.normalize('server/views/emails/passreset.jade'), { reset_link: 'http://auth.spaceshipsamurai.com/account/password/reset/' + user.passwordResetId }, function(err, text) {
+                jade.renderFile(path.join(config.rootPath, 'server/views/emails/passreset.jade'), { reset_link: 'http://auth.spaceshipsamurai.com/account/password/reset/' + user.passwordResetId }, function(err, text) {
 
                     if(err) {
                         logger.log(logger.level.critical, err);
@@ -198,7 +199,7 @@ module.exports = function(User) {
                 return res.send({ success: false, errors: [ err.message ] });
             }
 
-            jade.renderFile(path.normalize('server/views/emails/confirmation.jade'), { confirmation_link: 'http://auth.spaceshipsamurai.com/account/activate/' + confirmId }, function(err, text) {
+            jade.renderFile(path.join(config.rootPath, 'server/views/emails/confirmation.jade'), { confirmation_link: 'http://auth.spaceshipsamurai.com/account/activate/' + confirmId }, function(err, text) {
 
                 if(err) {
                     logger.log(logger.level.critical, err);

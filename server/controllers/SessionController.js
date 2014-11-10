@@ -41,6 +41,10 @@ exports.getCurrentUser = function(req, res) {
         user.email = req.user.email;
         user.character = req.user.character;
     }
+    else
+    {
+        return res.send(user);
+    }
 
     GroupManager.getGroupsByUser(req.user._id).then(function(groups){
         user.groups = groups;
