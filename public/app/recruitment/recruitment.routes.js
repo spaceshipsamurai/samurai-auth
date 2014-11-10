@@ -2,8 +2,23 @@ angular.module('ssAuth').config(['$locationProvider', '$stateProvider',  functio
 
     $stateProvider.state('recruitment', {
         url: '/recruitement',
-        templateUrl: 'templates/recruitment/index',
-        controller: 'recruitment.controller'
-    })
+        abstract: true,
+        controller: 'recruitment.controller',
+        templateUrl: 'templates/recruitment/layout'
+    }).state('recruitment.list', {
+        url: '/',
+        views: {
+            'content@recruitment': {
+                templateUrl: '/templates/recruitment/list'
+            }
+        }
+    }).state('recruitment.add', {
+        url: '/add',
+        views: {
+            'content@recruitment': {
+                templateUrl: '/templates/recruitment/add'
+            }
+        }
+    });
 
 }]);

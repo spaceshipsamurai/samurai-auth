@@ -1,3 +1,9 @@
-/**
- * Created by Russell on 11/9/2014.
- */
+var Recruitment = require('mongoose').model('Recruit');
+
+exports.add = function(req, res) {
+
+};
+
+exports.list = function(req, res){
+
+};

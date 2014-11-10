@@ -18,6 +18,7 @@ module.exports = function(app) {
     require('./routes/session')(app);
     require('./routes/api/keys')(app);
     require('./routes/api/characters')(app);
+    require('./routes/api/recruitment')(app);
 
     app.get('*',function(req, res, next) {
         if(!req.isAuthenticated())

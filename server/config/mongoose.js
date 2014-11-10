@@ -10,6 +10,7 @@ module.exports = function(config) {
     //load our models
     require('../models/Key');
     require('../models/Group');
+    require('../models/Recruit');
 
     var userModel = require('../models/User');
 

@@ -17,9 +17,14 @@ nav(ng-controller="NavCtrl")
                 i.fa.fa-lg.fa-fw.fa-group
                 span Group Management
         li(ui-sref-active="active", ng-show="isMemberOf('Recruiters')")
-            a(ui-sref="recruitment")
+            a(href='#')
                 i.fa.fa-lg.fa-fw.fa-envelope
-                span Recruitment
+                span.menu-item-parent Recruitment
+            ul
+                li(ui-sref-active="active")
+                    a(ui-sref="recruitment.list") View Names
+                li(ui-sref-active="active")
+                    a(ui-sref="recruitment.add") Add Names
         li
             a(href="#")
                 i.fa.fa-lg.fa-fw.fa-external-link
