@@ -1,6 +1,7 @@
 var config = require('../config/config').getConfig(),
     mongoose = require('mongoose'),
-    jade = require('jade');
+    jade = require('jade'),
+    path = require('path');
 
 mongoose.connect(config.mongoDb);
 var db = mongoose.connection;
@@ -36,7 +37,7 @@ db.once('open', function() {
                         mailer.send({
                             from: 'noreply@spaceshipsamurai.com',
                             fromname: 'Spaceship Samurai',
-                            to: req.body.email,
+                            to: users[index].email,
                             subject: 'Account Confirmation',
                             text: text
                         }, function(err){
