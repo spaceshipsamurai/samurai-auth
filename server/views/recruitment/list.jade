@@ -1,5 +1,5 @@
 div.row
-   div.col-md-12
+   div.col-md-6.col-lg-6.col-sm-12
       table.table.table-hover.table-striped
          thead
             tr
@@ -9,7 +9,7 @@ div.row
          tbody
             tr(ng-repeat="recruit in recruits")
                td {{ recruit.name }}
-               td {{ recruit.location }}
-               td {{ recruit.harvestDate }}
+               td {{ recruit.system }}
+               td {{ recruit.createdDate | date : 'dd MMMM yyyy HH:mm:ss'}}
             tr(ng-show="!recruits || recruits.length == 0")
                td(colspan=3) No names have been harvested. Please <a ui-sref="recruitment.add">add</a> names to continue.

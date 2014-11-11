@@ -1,7 +1,14 @@
 div.row
    div.col-md-6
-      textarea
-      button.btn.btn-primary(ng-click="parse") Parse
-   div.col-md-6
-      label(for="location") Location:
-      input(name="location", type="text", ng-model="newRecruits.location", placeholder="System Name")
+      form.form-horizontal(role="form")
+         div.form-group
+            label.col-sm-2.control-label(for="location") Location:
+            div.col-sm-10
+               input.form-control(name="location", type="text", ng-model="newRecruits.location", placeholder="System Name")
+         div.form-group
+            label.col-sm-2.control-label(for="names") Names:
+            div.col-sm-10
+               textarea.form-control(rows=10, ng-model="newRecruits.names")
+         div.form-group
+            div.col-sm-offset-2.col-sm-10
+               button.pull-right.btn.btn-primary(ng-click="parse()") Save

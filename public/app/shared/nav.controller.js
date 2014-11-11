@@ -1,5 +1,8 @@
-angular.module('ssAuth').controller('NavCtrl', ['$scope', function($scope) {
+angular.module('ssAuth').controller('NavCtrl', ['$scope', '$state', function($scope, $state) {
 
-    console.log($scope.currentUser);
+    $scope.stateActive = function(stateName) {
+            console.log($state.includes(stateName));
+            return stateName === $state.includes(stateName);
+    };
 
 }]);

@@ -1,0 +1,35 @@
+div.row
+   div.col-md-6.col-sm-12.col-lg-6
+      div.jarviswidget.jarviswidget-color-blueDark(role="widget", data-widget-togglebutton="true")
+         header(role="heading")
+            span.widget-icon
+               i.fa.fa-gears
+            h2 Mail Options
+            div.widget-toolbar
+         div(role="content")
+            form.form-horizontal(role="form")
+               div.form-group
+                  label(for="nameCount").control-label.col-sm-2 Number to mail:
+                  div.col-sm-10
+                     input(type="number", name="nameCount", ng-model="mailOptions.count").form-control
+               div.form-group
+                  label(for="priority").control-label.col-sm-2 Prioritize:
+                  div.col-sm-10
+                     select(ng-model="mailOptions.priority", name="priority").form-control
+                        option(value="newer") Newer
+                        option(value="older") Older
+               div.form-group
+                  div.col-sm-offset-2.col-sm-10
+                     button.btn.btn-primary.pull-right(ng-click="updateMail()") Update
+div.row(ng-show="mailRecruits")
+   div.col-md-6.col-sm-12.col-lg-6
+      div.row
+         div.col-sm-2 To:
+         div.col-sm-10 {{ mailRecruits }}
+      div.row
+         div.col-sm-2 Subject:
+         div.col-sm-10 {{ currentUser.character.corporation.name }} Invites You to Join Us in Nullsec!
+      div.row
+         div.col-sm-12
+            button(ng-show="mailRecruits", ng-click="sendMail()").btn.btn-primary.pull-right Mail Sent!
+
