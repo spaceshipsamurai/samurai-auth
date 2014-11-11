@@ -14,8 +14,7 @@ exports.add = function(req, res) {
         names = [];
 
     //Find duplicates
-    Recruit.find({  corporation: req.user.character.corporation.id,
-                    name: { $in: batch.names } }, function(err, recruits){
+    Recruit.find({  name: { $in: batch.names } }, function(err, recruits){
 
         if(err)
         {
@@ -68,8 +67,6 @@ exports.list = function(req, res){
     var query = { mailDate: { $exists: false },
         $or: [ {isLocked: false }, { lockUser: req.user._id }, { lockExpires: { $lt: new Date() }}] };
 
-    console.log(req.user._id);
-
     var q = Recruit.find(query);
 
     if(req.query.priority)
@@ -118,14 +115,7 @@ exports.sendMail = function(req, res) {
 
     var names = req.body.names;
 
-    console.log(names);
-    console.log(req.user.character.corporation.id );
-
-    Recruit.find({ name: {$in: names }, corporation: req.user.character.corporation.id }, function(err, recruits){
-        console.log(recruits);
-    });
-
-    Recruit.update({ name: {$in: names }, corporation: req.user.character.corporation.id },
+    Recruit.update({ name: {$in: names } },
                     {$set: { mailDate: new Date()}}, { multi: true}, function(err) {
 
             if(err)

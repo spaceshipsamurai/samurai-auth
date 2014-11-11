@@ -11,7 +11,7 @@ var recruitSchema = mongoose.Schema({
     lockExpires: Date,
     lockUser: Schema.ObjectId,
     mailDate: Date,
-    isLocked: Boolean
+    isLocked: { type: Boolean, default: false }
 });
 
 recruitSchema.index({ name: 1, corporation: 1}, { unique: true });
