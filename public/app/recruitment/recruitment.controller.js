@@ -2,6 +2,7 @@ angular.module('ssAuth').controller('recruitment.controller', ['$scope','$http',
 
     var currentMailRecruits = [];
 
+    $scope.lookup = {};
     $scope.$state = $state;
     $scope.$watch('$state.$current.locals.globals.recruits', function (recruits) {
         $scope.recruits = recruits.data;
@@ -56,6 +57,27 @@ angular.module('ssAuth').controller('recruitment.controller', ['$scope','$http',
         $http.post('/api/recruitment/mail', { names: currentMailRecruits }).success(function(){
             delete $scope.mailRecruits;
             currentMailRecruits = [];
+        });
+
+    };
+
+    $scope.validate = function() {
+
+        delete $scope.lookup.notFound;
+        $scope.lookup.validating = true;
+
+        $http.post('/api/recruitment/validate', { name: $scope.lookup.name }).success(function(data){
+
+            if(!data.characterID) {
+                $scope.lookup.notFound = true;
+                delete $scope.lookup.character;
+            }
+            else {
+                $scope.lookup.character = data;
+            }
+
+            delete $scope.lookup.validating;
+
         });
 
     };

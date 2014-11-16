@@ -1,6 +1,8 @@
 var Recruit = require('mongoose').model('Recruit'),
     Groups = require('../../services/membership/GroupManager'),
-    logger = require('../../config/logger');
+    logger = require('../../config/logger'),
+    neow = require('neow');
+
 
 exports.add = function(req, res) {
 
@@ -137,6 +139,43 @@ exports.authorize = function(req, res, next){
             next();
         else
             return res.status(401).json({ message: 'You are not authorized for this function'});
+
+    });
+
+};
+
+exports.validate = function(req, res) {
+
+    if(!req.body || !req.body.name) return res.json({});
+
+    Recruit.findOne({ name: req.body.name }, function(err, recruit) {
+
+        if(err) res.status(500).json({ message: 'Internal server error' });
+        if(!recruit || recruit.length == 0) return res.json({});
+
+        var eve = new neow.EveClient({});
+
+
+        eve.fetch('eve:CharacterID', { names: recruit.name }).then(function(result){
+
+            for(var id in result.characters) {
+
+                if(result.characters[id].name === recruit.name)
+                {
+                    eve.fetch('eve:CharacterInfo', { characterID: id }).then(function(cResult){
+                        return res.json(cResult);
+                    }).catch(function(err){
+                        console.log(err);
+                        return res.json({});
+                    });
+                }
+            }
+
+        }).catch(function(err){
+            console.log(err);
+            return res.json({});
+        });
+
 
     });
 

@@ -1,0 +1,31 @@
+div.row
+    div.col-md-6.col-sm-12.col-lg-6
+       form.form-horizontal(role="form")
+           div.form-group
+               label(for="lookup").control-label.col-sm-2 Character Name:
+               div.col-sm-8
+                   input(type="text", name="lookup", ng-model="lookup.name").form-control
+               div.col-sm-2
+                   button.btn.btn-primary(ng-click="validate()")
+                    i.fa.fa-spinner.fa-spin(ng-show="lookup.validating")
+                    |   Validate
+div.row(ng-show="lookup.notFound")
+    div.col-md-6.col-sm-12.col-lg-6
+        | Character not found in recruitment database.
+div.row(ng-show="lookup.character")
+    div.col-md-1
+        img.img-rounded(ng-src="//image.eveonline.com/Character/{{ lookup.character.characterID.content }}_128.jpg", alt="{{ lookup.character.characterName.content }}", title="{{ lookup.character.characterName.content }}", style="margin-right: 10px")
+    div.col-md-6
+        table
+            tr
+                th Name:
+                td {{ lookup.character.characterName.content }}
+            tr
+                th Corporation:
+                td {{ lookup.character.corporation.content }}
+            tr
+                th Alliance:
+                td {{ lookup.character.alliance.content || 'None' }}
+            tr
+                th Security Status:
+                td {{ lookup.character.securityStatus.content | number:2 }}

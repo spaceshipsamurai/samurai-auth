@@ -36,6 +36,14 @@ angular.module('ssAuth').config(['$locationProvider', '$stateProvider', function
                 templateUrl: '/templates/recruitment/mail'
             }
         }
+    }).state('recruitment.validation', {
+        url: '/validate',
+        controller: 'recruitment.controller',
+        views:{
+            'content@recruitment': {
+                templateUrl: '/templates/recruitment/validation'
+            }
+        }
     });
 
 }]);
