@@ -24,12 +24,15 @@ div.row
                     td
                         input.form-control(ng-model="newKey.vCode", placeholder="Verification Code")
                     td
-
+                        div(ng-show="error", style="line-height: 30px", role="alert").alert.alert-danger
+                            | {{ error }}
+                        div(ng-show="!error", style="line-height: 30px")
+                            a(href="https://community.eveonline.com/support/api-key/CreatePredefined?accessMask=268435455", target="_blank") Create Eve API Key
                     td(style="width: 300px;")
                         button.btn.btn-success(ng-click="save()")
                             i.fa.fa-save(style="margin-right: 10px")
                             | Save
-                        button.btn.btn-danger(style="margin-left: 10px", ng-click="newKey = undefined")
+                        button.btn.btn-danger(style="margin-left: 10px", ng-click="newKey = undefined; error = undefined")
                             i.fa.fa-ban(style="margin-right: 10px")
                             | Cancel
                 tr(ng-show="keys" ng-repeat="key in keys")

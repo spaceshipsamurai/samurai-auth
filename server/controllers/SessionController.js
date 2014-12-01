@@ -1,5 +1,5 @@
 var passport = require('passport'),
-    GroupManager = require('../services/membership/GroupManager');
+    GroupManager = require('samurai-membership').Groups;
 
 exports.authenticate = function(req, res, next) {
 
@@ -46,10 +46,11 @@ exports.getCurrentUser = function(req, res) {
         return res.send(user);
     }
 
-    GroupManager.getGroupsByUser(req.user._id).then(function(groups){
+    GroupManager.getByUserId(req.user._id).then(function(groups){
         user.groups = groups;
         res.send(user);
     }).error(function(err){
+        console.log(err);
         res.send(user);
     });
 

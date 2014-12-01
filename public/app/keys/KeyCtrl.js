@@ -12,6 +12,9 @@ angular.module('ssAuth').controller('KeyCtrl', ['$scope', 'KeyService', function
         KeyService.save($scope.newKey).then(function(){
             updateKeys();
             $scope.newKey = undefined;
+            $scope.error = undefined;
+        }).catch(function(err){
+            $scope.error = err;
         });
     };
 

@@ -1,5 +1,4 @@
-var Key = require('mongoose').model('Key'),
-    controller = require('../../../controllers/api/keysController')(Key);
+var controller = require('../../../controllers/api/keysController');
 
 module.exports = function(app) {
     app.get('/api/keys', controller.list);

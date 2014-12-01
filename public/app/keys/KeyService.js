@@ -17,6 +17,9 @@ angular.module('ssAuth').factory('KeyService', ['$http', '$q', 'SessionService',
 
         $http.post('/api/keys', key).success(function(){
             deferred.resolve();
+        }).error(function(data){
+            console.log('ERROR:' + JSON.stringify(data));
+            deferred.reject(data.message);
         });
 
         return deferred.promise;
