@@ -6,3 +6,11 @@ body.bg-war-room {
   bottom: 0;
   width: 100%;
 }
+[ng:cloak],
+[ng-cloak],
+[data-ng-cloak],
+[x-ng-cloak],
+.ng-cloak,
+.x-ng-cloak {
+  display: none !important;
+}

@@ -1,8 +1,22 @@
-angular.module('ssAuth').controller('NavCtrl', ['$scope', '$state', function($scope, $state) {
+angular.module('app.navigation', [ 'ui.router' ]).controller('NavCtrl', ['$scope', '$state', function($scope, $state) {
 
-    $scope.stateActive = function(stateName) {
-            console.log($state.includes(stateName));
-            return stateName === $state.includes(stateName);
+    var currentState = '';
+
+    this.setActive = function(isActive, state) {
+
+        if(currentState !== state)
+        {
+            $scope.active = isActive;
+            currentState = state;
+        }
+        else if(isActive)
+        {
+            $scope.active = true;
+        }
     };
+}])
+.config(['$stateProvider', function($stateProvider){
+
+
 
 }]);

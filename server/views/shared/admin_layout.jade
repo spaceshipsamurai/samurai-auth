@@ -2,16 +2,27 @@ doctype html
 html(lang="en")
     head
         include admin_head
-    body(ng-app="ssAuth").fixed-header.smart-style-1
-        header#header
-            span#logo(style="margin-left: 10px; color: #fff")
-                |Spaceship Samurai Services
-            div#logout.btn-header.transparent.pull-right
-                span.pull-right
-                    a(href="/session/logout", title="Sign Out", target="_self")
-                        i.fa.fa-sign-out
-        aside#left-panel
-            include leftnav
-        div#main(role="main")
-            div#content(ui-view)
-        include admin_scripts
+    body(ng-app="ssAuth")
+        div#page-container.page-sidebar-fixed.page-header-fixed
+            header#header.header.navbar.navbar-inverse.navbar-fixed-top
+                .container-fluid
+                    .navbar-header
+                        a(href="/").navbar-brand
+                            |Samurai Auth
+                        button(type="button" data-click="sidebar-toggled").navbar-toggle
+                            span.icon-bar
+                            span.icon-bar
+                            span.icon-bar
+                    ul.nav.navbar-nav.navbar-right
+                        li
+                            a(href="/session/logout", title="Sign Out", target="_self")
+                                i.fa.fa-sign-out
+                                | &nbsp Sign Out
+            div#sidebar.sidebar
+                div(data-scrollbar="true" data-height="100%")
+                    include ngnav
+            .sidebar-bg
+            div#content.content
+                div(ui-view)
+            div#footer.footer
+            include admin_scripts

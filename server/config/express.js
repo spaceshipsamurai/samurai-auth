@@ -3,7 +3,9 @@ var express = require('express'),
     passport = require('passport'),
     session = require('cookie-session'),
     bodyParser = require('body-parser'),
-    logger = require('morgan');
+    eLogger = require('morgan'),
+    logger = require('./logger'),
+    path = require('path');
 
 module.exports = function (app, config) {
 
@@ -19,15 +21,21 @@ module.exports = function (app, config) {
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(stylus.middleware({
-        src: config.rootPath + '/public',
+        src: path.join(config.rootPath, 'public'),
         compile: compile
     }));
 
+
     if(process.env.NODE_ENV === 'development')
     {
-        app.use(logger());
+        app.use(eLogger());
     }
 
-    app.use(express.static(config.rootPath + '/public'));
+    app.use(express.static(path.join(config.rootPath, 'public')));
 
-}
+    //error handling
+    app.use(function(err, req, res, next){
+        logger.log(logger.level.critical, err.msg, err.tags);
+        res.status(500).json({ message: 'Internal Server Error' });
+    });
+};

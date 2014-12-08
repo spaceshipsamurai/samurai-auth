@@ -51,14 +51,13 @@ angular.module('ssAuth').run(function($rootScope, $state, SessionService){
     $rootScope.currentUser = SessionService.restore();
 
     $rootScope.isMemberOf = function(group) {
-
         if(!$rootScope.currentUser.groups) return false;
 
         return $rootScope.currentUser.groups[group];
     };
 
     $rootScope.$on('$stateChangeStart',
-        function(event, toState, toParams, fromState, fromParams){
+        function(){
             SessionService.getCurrentUser().then(function(user){
                 $rootScope.currentUser = user;
             });

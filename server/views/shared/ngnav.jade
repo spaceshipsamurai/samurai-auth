@@ -1,0 +1,24 @@
+navigation
+   nav-item(state="dashboard", title="Dashboard", icon="fa-dashboard")
+   nav-group(icon="fa-user", title="My Profile")
+      nav-item(state="keys", title="API Keys")
+      nav-item(state="groups.list", title="Groups")
+      nav-item(state="services", title="Services")
+   nav-group(icon="fa-envelope", title="Recruitment")
+      nav-item(state="recruitment.list", title="View Names")
+      nav-item(state="recruitment.add", title="Add Names")
+      nav-item(state="recruitment.mail", title="Mail")
+      nav-item(state="recruitment.validation", title="Name Validation")
+   nav-group(icon="fa-external-link", title="Quick Links")
+      li
+         a(href="//forums.spaceshipsamurai.com", target="_blank")
+            i.fa.fa-lg.fa-fw.fa-comment
+            span Forums
+            i.fa.fa-lg.fa-fw.fa-external-link.pull-right
+      li
+         a(href="//kb.spaceshipsamurai.com", target="_blank")
+            i.fa.fa-lg.fa-fw.fa-bomb
+            span Killboard
+            i.fa.fa-lg.fa-fw.fa-external-link.pull-right
+   li.nav-header Admin
+   nav-item(state="groupAdmin", title="Group Management", icon="fa-users")

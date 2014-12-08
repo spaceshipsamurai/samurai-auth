@@ -1,0 +1,60 @@
+h1 Group Managment
+.row
+    .col-lg-6.col-md-12
+        .panel.panel-primary(ng-repeat="group in groups")
+            .panel-heading
+                ul(id="{{ group._id }}").nav.nav-tabs.pull-right
+                    li(ng-class="{ active: group.view === 'info' || !group.view }")
+                        a(href="javascript:void(0);", ng-click="viewInfo(group)")
+                            i.fa.fa-info
+                            span.hidden-xs   Info
+                    li(ng-class="{ active: group.view === 'members' }")
+                        a(href="javascript:void(0);", ng-click="viewMembers(group)")
+                            i.fa.fa-users
+                            span.hidden-xs   Members
+                h4.panel-title {{ group.name }}
+            .panel-body
+                .row(ng-show="group.view === 'info' || !group.view")
+                    .col-md-6
+                        | {{ group.description }}
+                    .col-md-6
+                        table
+                            tr
+                                th Owner:
+                                td {{ group.owner.name }}
+                            tr
+                                th Managers:
+                                td {{ createManagerList(group.managers) }}
+                div(ng-show="group.view === 'members'")
+                    .row
+                        .col-md-12
+                            ul.nav.nav-pills
+                                li(role="Presentation", ng-click="group.statusFilter = 'All'", ng-class="{ active: group.statusFilter === 'All'}")
+                                    a(href="javascript:void(0)") All ({{ group.members.length }})
+                                li(role="Presentation", ng-click="group.statusFilter = 'Member'", ng-class="{ active: group.statusFilter === 'Member'}")
+                                    a(href="javascript:void(0)") Member ({{ (group.members | filter: { status: 'Member' }).length }})
+                                li(role="Presentation", ng-click="group.statusFilter = 'Pending'", ng-class="{ active: group.statusFilter === 'Pending'}")
+                                    a(href="javascript:void(0)") Pending ({{ (group.members | filter: { status: 'Pending' }).length }})
+                                li(role="Presentation", ng-click="group.statusFilter = 'Inactive'", ng-class="{ active: group.statusFilter === 'Inactive'}")
+                                    a(href="javascript:void(0)") Inactive ({{ (group.members | filter: { status: 'Inactive' }).length }})
+                    .row
+                        .col-md-12(slim-scroll="{height: '225px'}")
+                            table.table.table-striped
+                                thead
+                                    tr
+                                        th Name
+                                        th Status
+                                        th
+                                tbody
+                                    tr(ng-repeat="member in group.members | filter:getGroupFilter(group)")
+                                        td {{ member.name }}
+                                        td {{ member.status }}
+                                        td
+                                            div.pull-right
+                                                a(href="javascript:void(0);", title="Approve", ng-if="member.status==='Pending'", ng-click="approveMember(group, member)").m-r-10
+                                                    i.fa.fa-check-square.fa-2x.text-success
+                                                a(href="javascript:void(0);", ng-if="member.status !== 'Pending'").m-r-10
+                                                    i.fa.fa-star.fa-2x(style="color: #FFD700", ng-if="group.owner && group.owner.id === member.id", title="Remove as owner")
+                                                    i.fa.fa-star.fa-2x(style="color: #C1CCD1", title="Set as owner")
+                                                a(href="javascript:void(0);").m-r-10
+                                                    i.fa.fa-trash.fa-2x.text-danger
