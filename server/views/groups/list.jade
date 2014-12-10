@@ -8,35 +8,5 @@ h1 Groups
             a(href="javascript:void(0)", ng-click="filterGroups('My Groups')") My Groups
 .row
    .col-md-12.col-lg-6
-      .panel.panel-primary(ng-repeat="group in groups")
-         .panel-heading
-            div.btn-group.pull-right
-               button.btn.btn-success.dropdown-toggle.pull-right(type="button", data-toggle="dropdown", aria-expanded="false")
-                  | Apply
-                  span.caret.m-l-10
-               ul.dropdown-menu.bg-silver(role="menu")
-                  li(ng-repeat="character in getAvailableCharacters(group)")
-                     a(href="javascript:void(0);", ng-click="applyToGroup(group, character)") {{ character.name }}
-                  li(ng-if="getAvailableCharacters(group).length === 0")
-                     a(href="javascript:void(0);") No available characters
-            h4.panel-title {{ group.name }}
-         .panel-body
-            .row
-               .col-md-6
-                  | {{ group.description }}
-               .col-md-6
-                  table
-                     tr
-                        th Owner:
-                        td {{ group.owner.name }}
-                     tr
-                        th Managers:
-                        td {{ createManagerList(group.managers) }}
-            .row(style="margin-top: 15px")
-               .col-md-12
-                  div(ng-if="hasMembers(group)")
-                     span(style="display: block; margin-bottom: 10px") My Members:
-                     div(ng-repeat="character in getCharacters(group)").thumbnail.col-md-2
-                        img.img-rounded( ng-src="//image.eveonline.com/Character/{{ character.id }}_64.jpg", alt="{{ character.name }}", title="{{ character.name }}")
-                        div.caption
-                           em Status: {{ character.status }}
+      group-panel(ng-repeat="group in groups", group="group")
+

@@ -13,12 +13,14 @@ angular.module('ssAuth').factory('SessionService', ['$http', '$cookies', '$q', f
 
         if(currentUser.lastUpdated)
         {
-            var diffMS = (new Date()).getTime() - currentUser.lastUpdated.getTime();
+            var diffMS = (new Date()).getTime() - new Date(currentUser.lastUpdated).getTime();
             var diffMin = ((diffMS/60)/60);
 
-            if(diffMin < 10)
+
+            if(diffMin < 5)
             {
-                return deferred.resolve(currentUser);
+                deferred.resolve(currentUser);
+                return deferred.promise;
             }
         }
 
@@ -34,8 +36,7 @@ angular.module('ssAuth').factory('SessionService', ['$http', '$cookies', '$q', f
 
         var user = JSON.parse(cookie);
 
-        currentUser.email = user.email;
-        currentUser.character = user.character;
+        angular.extend(currentUser, user);
 
         return currentUser;
     };
@@ -49,10 +50,10 @@ angular.module('ssAuth').factory('SessionService', ['$http', '$cookies', '$q', f
         var deferred = $q.defer();
 
         $http.get('/session').success(function(user){
-            currentUser.email = user.email;
-            currentUser.character = user.character;
+            angular.extend(currentUser, user);
+            currentUser.lastUpdated = new Date();
             saveToCookie();
-            deferred.resolve(user);
+            deferred.resolve(currentUser);
         });
 
         return deferred.promise;
