@@ -1,5 +1,8 @@
 var passport = require('passport'),
-    GroupManager = require('samurai-membership').Groups;
+    samurai = require('samurai-membership'),
+    GroupManager = samurai.Groups,
+    KeyManager = samurai.Keys,
+    Promise = require('bluebird');
 
 exports.authenticate = function(req, res, next) {
 
@@ -32,7 +35,7 @@ exports.authenticate = function(req, res, next) {
     auth(req, res, next);
 };
 
-exports.getCurrentUser = function(req, res) {
+exports.getCurrentUser = function(req, res, next) {
 
     var user = {};
 
@@ -46,12 +49,16 @@ exports.getCurrentUser = function(req, res) {
         return res.send(user);
     }
 
-    GroupManager.getByUserId(req.user._id).then(function(groups){
-        user.groups = groups;
-        res.send(user);
-    }).error(function(err){
-        console.log(err);
-        res.send(user);
+
+    Promise.props({
+        characters: KeyManager.getCharacters({ userId: req.user._id, validOnly: true }),
+        groups: GroupManager.getByUserId(req.user._id)
+    }).then(function(result){
+        user.characters = result.characters;
+        user.groups = result.groups;
+        res.json(user);
+    }).catch(function(err){
+        next({ msg: err, tags: ['auth', 'session']})
     });
 
 };

@@ -6,4 +6,10 @@ angular.module('ssAuth').config(['$locationProvider', '$stateProvider',  functio
         controller: 'group.admin.controller'
     });
 
+    $stateProvider.state('groups', {
+        url: '/groups',
+        templateUrl: 'templates/groups/list',
+        controller: 'group.controller'
+    });
+
 }]);

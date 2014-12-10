@@ -15,6 +15,79 @@
 
     };
 
+    var groupController = function($scope, $location, $http, filterFilter) {
+
+        var publicGroups;
+        $scope.filter = 'All';
+
+        $http.get('/api/admin/groups').success(function(data){
+            publicGroups = filterFilter(data, { isPrivate: false });
+            $scope.groups = publicGroups;
+        });
+
+        $scope.filterGroups = function(filter) {
+            $scope.filter = filter;
+
+            if(filter === 'My Groups') $scope.groups = $scope.currentUser.groups;
+            else if(filter === 'All') $scope.groups = publicGroups;
+
+        };
+
+        $scope.hasMembers = function(group) {
+            return $scope.currentUser.groups[group.name] !== undefined;
+        };
+
+        $scope.getCharacters = function(group) {
+            return $scope.currentUser.groups[group.name].characters;
+        };
+
+        $scope.getAvailableCharacters = function(group) {
+
+            if($scope.currentUser.groups[group.name])
+            {
+                var existingCharacters = $scope.currentUser.groups[group.name].characters;
+                var existingIds = [];
+
+                for(var x = 0; x < existingCharacters.length; x++)
+                {
+                    existingIds.push(existingCharacters[x].id);
+                }
+
+                var available = [];
+
+                for(var x = 0; x < $scope.currentUser.characters.length; x++)
+                {
+                    if(existingIds.indexOf($scope.currentUser.characters[x].id) === -1)
+                        available.push($scope.currentUser.characters[x]);
+                }
+
+                return available;
+
+            }
+
+            return $scope.currentUser.characters;
+        };
+
+        $scope.applyToGroup = function(group, character) {
+
+            $http.post('/api/groups/'+group._id+'/apply', { id: character.id, name: character.name }).success(function(){
+
+                if(!$scope.currentUser.groups[group.name]) {
+                    group.characters = [];
+                    $scope.currentUser.groups[group.name] = group;
+                }
+
+                character.status = 'Pending';
+                $scope.currentUser.groups[group.name].characters.push(character);
+
+            }).error(function(){
+                alert('Error applying to group, try later');
+            });
+
+        };
+
+    };
+
     var adminController = function($scope, $location, $http) {
 
         $http.get('/api/admin/groups').success(function(data){
@@ -62,6 +135,7 @@
     };
 
     module.controller('group.admin.controller', ['$scope', '$location', '$http', adminController]);
+    module.controller('group.controller', ['$scope', '$location', '$http', 'filterFilter', groupController])
 
 })(angular.module('ssAuth'));
 

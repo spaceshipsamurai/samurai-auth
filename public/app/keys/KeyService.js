@@ -1,4 +1,4 @@
-angular.module('ssAuth').factory('KeyService', ['$http', '$q', 'SessionService', function($http, $q){
+angular.module('ssAuth').factory('KeyService', ['$http', '$q', function($http, $q){
 
     var getKeys = function() {
 

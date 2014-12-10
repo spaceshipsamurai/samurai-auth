@@ -46,7 +46,7 @@ angular.module('ssAuth').config(['$locationProvider', '$stateProvider', '$httpPr
 
 }]);
 
-angular.module('ssAuth').run(function($rootScope, $state, SessionService){
+angular.module('ssAuth').run(['$rootScope', '$state', 'SessionService' ,function($rootScope, $state, SessionService){
 
     $rootScope.currentUser = SessionService.restore();
 
@@ -64,4 +64,4 @@ angular.module('ssAuth').run(function($rootScope, $state, SessionService){
     });
 
 
-});
+}]);
