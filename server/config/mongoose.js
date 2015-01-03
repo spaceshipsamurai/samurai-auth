@@ -1,16 +1,13 @@
 var mongoose = require('mongoose'),
-    logger = require('./logger'),
-    samuraiMembership = require('samurai-membership');
+    logger = require('./logger');
 
 
 module.exports = function(config) {
 
     mongoose.connect(config.mongoDb);
     var db = mongoose.connection;
-    samuraiMembership.connect(config.mongoDb);
-    require('../models/Recruit');
 
-    require('../models/User');
+    require('../models');
 
     db.on("error", function(errorObject){
         logger.log(logger.level.critical, errorObject);

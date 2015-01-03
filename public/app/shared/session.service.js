@@ -2,6 +2,11 @@ angular.module('ssAuth').factory('SessionService', ['$http', '$cookies', '$q', f
 
     var currentUser = {};
 
+    currentUser.isAdmin = function() {
+        if(!currentUser || !currentUser.groups || !currentUser.groups['Admins']) return false;
+        return true;
+    };
+
     var getCurrentUser = function(forceUpdate) {
 
         var deferred = $q.defer();

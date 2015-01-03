@@ -1,6 +1,15 @@
-angular.module('app.navigation', [ 'ui.router' ]).controller('NavCtrl', ['$scope', '$state', function($scope, $state) {
+angular.module('app.navigation', [ 'ui.router' ]).controller('NavCtrl', ['$scope', '$state', 'SessionService', function($scope, $state, SessionService) {
 
-    var currentState = '';
+    var currentState = '', user;
+
+    SessionService.getCurrentUser().then(function(currentUser){
+        user = currentUser;
+    });
+
+    $scope.isAdmin = function() {
+        if(!user) return false;
+        return user.isAdmin();
+    };
 
     this.setActive = function(isActive, state) {
 
@@ -14,9 +23,4 @@ angular.module('app.navigation', [ 'ui.router' ]).controller('NavCtrl', ['$scope
             $scope.active = true;
         }
     };
-}])
-.config(['$stateProvider', function($stateProvider){
-
-
-
 }]);

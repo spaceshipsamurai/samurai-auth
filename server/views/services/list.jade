@@ -1,47 +1,24 @@
 div.row
     div.col-md-12
         h1 My Services
-div.row(ng-show="!primaryCharacter")
-    div.col-md-12
-        | You currently don't have a primary character selected. Before you can continue setting up services you
-        | must select a primary character. <br/><br/>
-        div.alert.alert-danger(ng-show="!characters || characters.length == 0")
-            i.fa-fw.fa.fa-times-circle
-            | Oops. You don't have any characters yet. Visit the API Key management page to add a new API key.
-        div.alert.alert-warning
-            button.close(data-dismiss="alert") x
-            i.fa-fw.fa.fa-warning
-            | Once you have selected a primary character you will not be able to change it. Please choose a character
-            | that are you best known for in the game.
-    div.col-md-2(ng-repeat="character in characters")
-        div.panel.panel-blue
-            div.panel-heading
-                img.img-rounded.pull-left(ng-src="//image.eveonline.com/Character/{{ character.id}}_32.jpg", alt="{{ character.name }}", title="{{ character.name }}", style="margin-right: 10px")
-                h3.panel-title.pull-left(style="line-height: 32px") {{ character.name }}
-                div(style="clear: both;")
-            div.panel-body
-                table.table
-                    tbody
-                        tr(ng-show="character.alliance.id != 0")
-                            td
-                                img.img-rounded(ng-src="//image.eveonline.com/Alliance/{{ character.alliance.id }}_32.png", alt="{{ character.alliance.name }}", title="{{ character.alliance.name }}")
-                                span(style="line-height: 32px; margin-left: 10px;") {{ character.alliance.name }}
-                        tr
-                            td
-                                img.img-rounded(ng-src="//image.eveonline.com/Corporation/{{ character.corporation.id }}_32.png", alt="{{ character.corporation.name }}", title="{{ character.corporation.name }}")
-                                span(style="line-height: 32px; margin-left: 10px;") {{ character.corporation.name }}
-            div.panel-footer.text-align-center
-                button.btn.btn-primary(ng-click="setPrimary(character.id)") Select
-div.row(ng-show="primaryCharacter")
-    div.col-md-12
-        div.panel.panel-blue
+div.row
+    div.col-md-12.col-lg-6
+        div.panel.panel-primary
             div.panel-heading
                 h3.panel-title Forum Account
-            div.panel-body
+            div.panel-body(ng-if="services.forum")
                 div.row
                     div.col-md-10
-                        | {{ primaryCharacter.name }} <br/>
-                        | {{ primaryCharacter.corporation.name }} <br/><br/>
+                        | {{ services.forum.name }} <br/>
                         p The username and password used to sign into this service portal will also work for the forums. Groups will be assigned based on your auth groups, corporation and alliance.
                     div.col-md-2
-                        img.pull-right.img-rounded(ng-src="//image.eveonline.com/Character/{{ primaryCharacter.id }}_128.jpg", alt="{{ primaryCharacter.name }}", title="{{ primaryCharacter.name }}", style="margin-right: 10px")
+                        img.pull-right.img-rounded(ng-src="//image.eveonline.com/Character/{{ services.forum.characterId }}_64.jpg", alt="{{ services.forum.name }}", title="{{ services.forum.name }}", style="margin-right: 10px")
+            div.panel-body(ng-if="!services.forum")
+                div.row
+                    .col-md-12
+                        | To use the forums you must select which character you wish to post as. This should be the character that you are commonly known as in game.
+                .row.m-t-10
+                    .col-md-12
+                        .col-md-2(ng-repeat="character in characters")
+                            img.img-rounded(ng-src="//image.eveonline.com/Character/{{ character.id }}_64.jpg", alt="{{ character.name }}", title="{{ character.name }}", style="margin-right: 10px")
+                            button.btn.btn-primary.m-t-10(ng-click="setForumUser(character)") Select

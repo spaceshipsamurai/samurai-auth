@@ -20,5 +20,5 @@ navigation
             i.fa.fa-lg.fa-fw.fa-bomb
             span Killboard
             i.fa.fa-lg.fa-fw.fa-external-link.pull-right
-   li.nav-header Admin
-   nav-item(state="groupAdmin", title="Group Management", icon="fa-users")
+   li.nav-header(ng-if="isAdmin()") Admin
+   nav-item(state="groupAdmin", title="Group Management", icon="fa-users", ng-if="isAdmin()")

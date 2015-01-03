@@ -1,7 +1,6 @@
 var passport = require('passport'),
-    samurai = require('samurai-membership'),
-    GroupManager = samurai.Groups,
-    KeyManager = samurai.Keys,
+    KeyService = require('../services/eve/key-service'),
+    Membership = require('../services/account/membership-service');
     Promise = require('bluebird');
 
 exports.authenticate = function(req, res, next) {
@@ -43,6 +42,7 @@ exports.getCurrentUser = function(req, res, next) {
     {
         user.email = req.user.email;
         user.character = req.user.character;
+        user.services = req.user.services;
     }
     else
     {
@@ -51,8 +51,8 @@ exports.getCurrentUser = function(req, res, next) {
 
 
     Promise.props({
-        characters: KeyManager.getCharacters({ userId: req.user._id, validOnly: true }),
-        groups: GroupManager.getByUserId(req.user._id)
+        characters: KeyService.getCharacters({ userId: req.user._id, validOnly: true }),
+        groups: Membership.getActiveMembershipsByUser(req.user._id)
     }).then(function(result){
         user.characters = result.characters;
         user.groups = result.groups;

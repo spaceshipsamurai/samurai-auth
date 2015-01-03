@@ -14,7 +14,7 @@ angular.module('ssAuth').config(['$locationProvider', '$stateProvider', '$httpPr
     }).state('services', {
         url: '/services',
         templateUrl: '/templates/services/list',
-        controller: 'ServicesCtrl'
+        controller: 'services.controller'
     });
 
     var unauthorizedInterceptor = ['$location', '$q', function($location, $q) {

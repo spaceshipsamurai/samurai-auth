@@ -1,32 +1,62 @@
 .panel.panel-primary
    .panel-heading
-      div.btn-group.pull-right
-         button.btn.btn-success.dropdown-toggle.pull-right(type="button", data-toggle="dropdown", aria-expanded="false")
+      div.btn-group.pull-right(ng-if="!userIsMember()")
+         button.btn.btn-success.pull-right(type="button")
             | Apply
-            span.caret.m-l-10
-         ul.dropdown-menu.bg-silver(role="menu")
-            li(ng-repeat="character in availableCharacters")
-               a(href="javascript:void(0);", ng-click="applyToGroup(group, character)") {{ character.name }}
-            li(ng-if="availableCharacters.length === 0")
-               a(href="javascript:void(0);") No available characters
+      ul(id="{{ group._id }}", ng-if="isGroupAdmin()").nav.nav-tabs.pull-right.m-r-10
+         li(ng-class="{ active: group.view === 'info' || !group.view }")
+            a(href="javascript:void(0);", ng-click="viewInfo(group)")
+               i.fa.fa-info
+               span.hidden-xs   Info
+         li(ng-class="{ active: group.view === 'members' }")
+            a(href="javascript:void(0);", ng-click="viewMembers(group)")
+               i.fa.fa-users
+               span.hidden-xs   Members
       h4.panel-title {{ group.name }}
    .panel-body
-      .row
-         .col-md-6
-            | {{ group.description }}
-         .col-md-6
-            table
-               tr
-                  th Owner:
-                  td {{ group.owner.name }}
-               tr
-                  th Managers:
-                  td {{ createManagerList(group.managers) }}
-      .row(style="margin-top: 15px")
-         .col-md-12
-            div(ng-if="hasMembers")
-               span(style="display: block; margin-bottom: 10px") My Members:
-               div(ng-repeat="character in memberCharacters").thumbnail.col-md-2
-                  img.img-rounded( ng-src="//image.eveonline.com/Character/{{ character.id }}_64.jpg", alt="{{ character.name }}", title="{{ character.name }}")
-                  div.caption
-                     em Status: {{ character.status }}
+      div(ng-show="group.view === 'info'")
+         .row
+            .col-md-6
+               | {{ group.description }}
+            .col-md-6
+               table
+                  tr
+                     th Owner:
+                     td {{ group.owner.name }}
+                  tr
+                     th Managers:
+                     td
+                        span(ng-repeat="manager in group.managers") {{ manager.primaryCharacter.name }}
+      div(ng-show="group.view === 'members'", ng-if="isGroupAdmin()")
+         .row
+            .col-md-12
+               ul.nav.nav-pills
+                  li(role="Presentation", ng-click="group.statusFilter = 'All'", ng-class="{ active: group.statusFilter === 'All'}")
+                     a(href="javascript:void(0)") All ({{ group.members.length }})
+                  li(role="Presentation", ng-click="group.statusFilter = 'Member'", ng-class="{ active: group.statusFilter === 'Member'}")
+                     a(href="javascript:void(0)") Member ({{ (group.members | filter: { status: 'Member' }).length }})
+                  li(role="Presentation", ng-click="group.statusFilter = 'Pending'", ng-class="{ active: group.statusFilter === 'Pending'}")
+                     a(href="javascript:void(0)") Pending ({{ (group.members | filter: { status: 'Pending' }).length }})
+                  li(role="Presentation", ng-click="group.statusFilter = 'Inactive'", ng-class="{ active: group.statusFilter === 'Inactive'}")
+                     a(href="javascript:void(0)") Inactive ({{ (group.members | filter: { status: 'Inactive' }).length }})
+         .row
+            .col-md-12(slim-scroll="{height: '225px'}")
+               table.table.table-striped
+                  thead
+                     tr
+                        th Name
+                        th Status
+                        th
+                  tbody
+                     tr(ng-repeat="member in group.members | filter:getGroupFilter(group)")
+                        td {{ member.name }}
+                        td {{ member.status }}
+                        td
+                           div.pull-right
+                              a(href="javascript:void(0);", title="Approve", ng-if="member.status==='Pending'", ng-click="approveMember(group, member)").m-r-10
+                                 i.fa.fa-check-square.fa-2x.text-success
+                              a(href="javascript:void(0);", ng-if="member.status !== 'Pending' && isGroupAdmin()").m-r-10
+                                 i.fa.fa-star.fa-2x(style="color: #FFD700", title="Remove as owner")
+                                 i.fa.fa-star.fa-2x(style="color: #C1CCD1", title="Set as owner")
+                              a(href="javascript:void(0);", title="Remove Character", ng-click="removeMember(member)" ng-if="isGroupAdmin()").m-r-10
+                                 i.fa.fa-trash.fa-2x.text-danger

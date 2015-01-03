@@ -6,7 +6,7 @@ var config = require('../config/config').getConfig(),
 mongoose.connect(config.mongoDb);
 var db = mongoose.connection;
 
-require('../models/User');
+require('../models/account/User');
 var User = mongoose.model('User');
 
 db.on("error", function(errorObject){

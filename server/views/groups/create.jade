@@ -1,0 +1,34 @@
+.panel.panel-primary
+   .panel-heading
+      h4.panel-title New Group
+   .panel-body
+      form.form-horizontal
+         .form-group
+            label.col-md-3.control-label.ui-sortable Name
+            .col-md-9.ui-sortable
+               input(type="text", placeholder="Group Name").form-control
+         .form-group
+            label.col-md-3.control-label.ui-sortable Description
+            .col-md-9.ui-sortable
+               textarea(row="5", placeholder="Description").form-control
+         .form-group
+            label.col-md-3.control-label.ui-sortable Owner
+            .col-md-8.ui-sortable
+               select(ng-options="user.primary.name for user in primaries",
+                        ng-model="groupOwner", data-live-search="true",
+                        data-style="btn-white", select-two="{ minimumInputLength: 2 }").form-control
+         .form-group
+            label.col-md-3.control-label.ui-sortable Managers
+            .col-md-8.ui-sortable
+               select(ng-options="user.primary.name for user in primaries",
+                  ng-model="groupManagers", data-live-search="true",
+                  data-style="btn-white", select-two="{ minimumInputLength: 2 }", multiple).form-control
+         .form-group
+            label.col-md-3.control-label.ui-sortable Forum Group
+            .col-md-9.ui-sortable
+               input(type="text", placeholder="Forum Group ID").form-control
+         .form-group
+            label.col-md-3.control-label.ui-sortable Teamspeak Group
+            .col-md-9.ui-sortable
+               input(type="text", placeholder="Teamspeak Group ID").form-control
+      button.btn.btn-primary.pull-right Save

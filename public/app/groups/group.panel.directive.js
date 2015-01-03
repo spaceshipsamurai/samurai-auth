@@ -12,7 +12,7 @@
             link: function(scope, element, attrs) {
 
             },
-            templateUrl: 'templates/groups/group_panel'
+            templateUrl: '/templates/groups/group_panel'
         };
 
     };

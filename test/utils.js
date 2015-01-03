@@ -1,14 +1,6 @@
-// ensure the NODE_ENV is set to 'test'
-// this is helpful when you would like to change behavior when testing
-process.env.NODE_ENV = 'testing';
-
-require('../server/models/Group');
-require('../server/models/Key');
-require('../server/models/User');
-
 var mongoose = require('mongoose'),
-    config = require('../server/config/config')[process.env.NODE_ENV],
-    Promise = require('bluebird');
+    Promise = require('bluebird'),
+    path = require('path');
 
 before(function(done){
 
@@ -45,15 +37,19 @@ var collections = function(){
     var clearAll = function() {
         var promises = [];
 
-        promises.push(clear('keys'));
-        promises.push(clear('users'));
+        //promises.push(clear('keys'));
+        //promises.push(clear('users'));
         promises.push(clear('groups'));
+        promises.push(clear('members'));
 
         return Promise.all(promises);
     };
 
     var clear = function(collectionName) {
         return new Promise(function(resolve, reject){
+
+            if(!mongoose.connection.collections[collectionName]) resolve();
+
             mongoose.connection.collections[collectionName].drop(resolve, reject);
         });
     };
@@ -79,3 +75,25 @@ exports.createModel = function(type, model) {
         })
     });
 };
+
+var src = require(path.join(path.normalize(__dirname + './../'), 'src'));
+exports.src =  src;
+
+var clone = function(obj){
+
+    if(obj == null || typeof(obj) != 'object')
+        return obj;
+
+    var temp = obj.constructor(); // changed
+
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key)) {
+            temp[key] = clone(obj[key]);
+        }
+    }
+
+    return temp;
+
+};
+
+exports.clone = clone;

@@ -1,7 +1,7 @@
 var Recruit = require('mongoose').model('Recruit'),
     logger = require('../../config/logger'),
     neow = require('neow'),
-    GroupManager = require('samurai-membership').Groups;
+    Membership = require('../../services/account/membership-service');
 
 
 exports.add = function(req, res) {
@@ -133,7 +133,7 @@ exports.sendMail = function(req, res) {
 
 exports.authorize = function(req, res, next){
 
-    GroupManager.getByUserId(req.user._id).then(function(groups){
+    Membership.getActiveMembershipsByUser(req.user._id).then(function(groups){
 
         if(groups['Recruiters'])
             next();
