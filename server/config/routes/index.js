@@ -18,7 +18,7 @@ module.exports = function(app) {
     app.all('/api/*', ensureAuthenticated);
     require('./account/account')(app);
     require('./account/session')(app);
-    require('./api/services/forums')(app, controllerDir);
+    require('./account/services')(app, controllerDir);
     require('./account/groups')(app, controllerDir);
     require('./eve/keys')(app, controllerDir);
     require('./eve/characters')(app, controllerDir);

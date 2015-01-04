@@ -31,4 +31,8 @@
             label.col-md-3.control-label.ui-sortable Teamspeak Group
             .col-md-9.ui-sortable
                input(type="text", placeholder="Teamspeak Group ID", ng-model="group.teamspeak").form-control
+         .form-group
+            label.col-md-3.control-label.ui-sortable Jabber Group
+            .col-md-9.ui-sortable
+               input(type="text", placeholder="Jabber Group Name", ng-model="group.jabber").form-control
          button(type="submit", ng-click="save(group)").btn.btn-primary.pull-right Save

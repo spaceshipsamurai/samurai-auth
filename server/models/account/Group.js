@@ -8,6 +8,7 @@ var groupSchema = mongoose.Schema({
     forumGroupId: Number,
     description: String,
     teamspeakId: Number,
+    jabberId: String,
     isPrivate: Boolean,
     createdDate: { type: Date, required: 'Created Date is required' },
     createdBy: { type: Schema.ObjectId, ref: 'User', required: 'Created By is required'},

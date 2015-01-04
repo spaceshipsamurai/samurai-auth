@@ -19,6 +19,10 @@ var userSchema = mongoose.Schema({
             characterId: Number,
             forumId: Number,
             name: String
+        },
+        jabber: {
+            username: String,
+            character: { type: mongoose.Schema.ObjectId, ref: 'Character' }
         }
     },
     primary: { type: mongoose.Schema.ObjectId , ref: 'Character' }

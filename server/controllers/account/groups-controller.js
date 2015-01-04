@@ -33,6 +33,7 @@ exports.create = function(req, res, next) {
     var managers = req.body.managers || [];
     var fGroup = req.body.forum;
     var tsGroup = req.body.teamspeak;
+    var jGroup = req.body.jabber;
 
     if(fGroup) fGroup = Number(fGroup);
     if(tsGroup) tsGroup = Number(tsGroup);
@@ -46,7 +47,8 @@ exports.create = function(req, res, next) {
         owner: owner,
         managers: managers,
         forumGroupId: fGroup,
-        teamspeakId: tsGroup
+        teamspeakId: tsGroup,
+        jabberId: jGroup
     });
 
     group.save(function(err, g) {

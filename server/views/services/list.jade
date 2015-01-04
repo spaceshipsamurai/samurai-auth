@@ -2,7 +2,7 @@ div.row
     div.col-md-12
         h1 My Services
 div.row
-    div.col-md-12.col-lg-6
+    div.col-md-12.col-lg-7
         div.panel.panel-primary
             div.panel-heading
                 h3.panel-title Forum Account
@@ -22,3 +22,32 @@ div.row
                         .col-md-2(ng-repeat="character in characters")
                             img.img-rounded(ng-src="//image.eveonline.com/Character/{{ character.id }}_64.jpg", alt="{{ character.name }}", title="{{ character.name }}", style="margin-right: 10px")
                             button.btn.btn-primary.m-t-10(ng-click="setForumUser(character)") Select
+    div.col-md-12.col-lg-7
+        div.panel.panel-primary
+            div.panel-heading
+                h3.panel-title Jabber Account (Alpha)
+            div.panel-body(ng-if="services.jabber")
+                div.row
+                    div.col-md-10
+                        form.form-horizontal
+                            .form-group
+                                label.col-md-3.control-label.ui-sortable Username
+                                .col-md-9.ui-sortable
+                                    input(type="text", ng-model="services.jabber.username", disabled).form-control
+                            .form-group
+                                label.col-md-3.control-label.ui-sortable Password
+                                .col-md-7.ui-sortable
+                                    input(type="text", ng-model="jabberPass").form-control
+                                .col-md-2.ui-sortable
+                                    button.btn.btn-primary(ng-click="updateJabberPassword(jabberPass)") Update
+                    div.col-md-2
+                        img.pull-right.img-rounded(ng-src="//image.eveonline.com/Character/{{ services.forum.characterId }}_64.jpg", alt="{{ services.forum.name }}", title="{{ services.forum.name }}", style="margin-right: 10px")
+            div.panel-body(ng-if="!services.jabber")
+                div.row
+                    .col-md-12
+                        | To use jabber you must select which character you wish to connect as. This should be the character that you are commonly known as in game.
+                .row.m-t-10
+                    .col-md-12
+                        .col-md-2(ng-repeat="character in characters")
+                            img.img-rounded(ng-src="//image.eveonline.com/Character/{{ character.id }}_64.jpg", alt="{{ character.name }}", title="{{ character.name }}", style="margin-right: 10px")
+                            button.btn.btn-primary.m-t-10(ng-click="setJabberUser(character)") Select
