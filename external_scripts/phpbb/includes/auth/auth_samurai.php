@@ -13,6 +13,7 @@ if (!defined('IN_PHPBB'))
 
 require __DIR__.'/../samurai_auth/data/UserRepo.php';
 require __DIR__.'/../samurai_auth/data/GroupRepo.php';
+require __DIR__.'/../samurai_auth/data/KeyRepo.php';
 require __DIR__.'/../samurai_auth/services/SamuraiAuthService.php';
 require __DIR__.'/../samurai_auth/services/ForumService.php';
 
@@ -24,7 +25,8 @@ function login_samurai($username, $password, $ip = '', $browser = '', $forwarded
     $connectionString = $config['mongo_db'];
     $userRepo = new UserRepo($connectionString);
     $groupRepo = new GroupRepo($connectionString);
-    $authService = new SamuraiAuthService($userRepo, $groupRepo);
+    $keyRepo = new KeyRepo($connectionString);
+    $authService = new SamuraiAuthService($userRepo, $groupRepo, $keyRepo);
 
 	// do not allow empty password
 	if (!$password)
@@ -131,6 +133,7 @@ function login_samurai($username, $password, $ip = '', $browser = '', $forwarded
 
     $forumService = new ForumService($db);
     $forumService->SyncGroups($authService->GetGroups($authUser), $row['user_id']);
+    $authService->SyncUser($authUser['_id'], $row['user_id']);
 
 	// Successful login... set user_login_attempts to zero...
 	return array(

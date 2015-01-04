@@ -19,6 +19,18 @@ class UserRepo extends MongoRepo {
         return $authUser;
     }
 
+    public function updateForumUserId($userId, $forumId) {
+        
+        $user = $this->users->findOne(array('_id' => new MongoID($userId)));
+
+        if(!is_null($user))
+        {
+            $user['services']['forum']['forumId'] = $forumId;
+            $this->users->save($user);
+        }
+        
+    }
+
 }
 
 ?>
