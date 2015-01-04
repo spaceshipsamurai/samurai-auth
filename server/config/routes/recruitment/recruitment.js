@@ -1,4 +1,4 @@
-var controller = require('../../../controllers/api/recruitmentController');
+var controller = require('../../../controllers/recruitment/recruitmentController');
 
 module.exports = function(app) {
     app.get('/api/recruitment', controller.authorize, controller.list);

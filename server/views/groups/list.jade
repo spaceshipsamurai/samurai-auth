@@ -1,12 +1,5 @@
 h1 Groups
 .row
    .col-md-12.col-lg-6
-      ul.nav.nav-pills
-         li(role="Presentation", ng-class="{ active: filter === 'All'}")
-            a(href="javascript:void(0)", ng-click="filterGroups('All')") All
-         li(role="Presentation", ng-class="{ active: filter === 'My Groups'}")
-            a(href="javascript:void(0)", ng-click="filterGroups('My Groups')") My Groups
-.row
-   .col-md-12.col-lg-6
       group-panel(ng-repeat="group in groups", group="group")
 

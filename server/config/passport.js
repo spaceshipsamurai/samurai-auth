@@ -1,7 +1,8 @@
 var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     mongoose = require('mongoose'),
-    config = require('../config/config').getConfig();
+    config = require('../config/config').getConfig(),
+    Membership = require('../services/account/membership-service');
 
 module.exports = function () {
     passport.use(new LocalStrategy(function (email, password, done) {
@@ -24,8 +25,13 @@ module.exports = function () {
 
     passport.deserializeUser(function (id, done) {
         var User = mongoose.model('User');
-        User.findById(id, function(err, user){
-            done(err, user);
+        User.findById(id)
+            .populate('primary')
+            .exec(function(err, user){
+            Membership.getActiveMembershipsByUser(user._id).then(function(memberships){
+                user.groups = memberships;
+                done(err, user);
+            });
         });
 
     });

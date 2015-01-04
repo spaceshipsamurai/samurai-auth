@@ -31,38 +31,23 @@ module.exports = function() {
             });
     };
 
-    var updatePrimaryCharacter = function(req, res) {
+    var updatePrimaryCharacter = function(req, res, next) {
 
-        var userId = req.user._id;
+        Character.findOne({ _id: req.params.cid, user: req.user._id })
+            .populate('user', 'primary')
+            .exec(function(err, character){
+                if(err) return next({ msg: err, tags: ['characters', 'auth', 'mongo', 'update-primary']});
 
-        KeyManager.getCharacters({userId: req.user._id }).then(function(characters){
+                if(!character) return res.json({ msg: 'success' });
 
-            if(characters[req.params.characterId]){
-                User.update({ _id: req.user._id }, { $set: { character: characters[req.params.characterId]}}, function(){
-                    return res.json();
+
+                character.user.primary = req.params.cid;
+                character.user.save(function(err){
+                    if(err) return next({ msg: err, tags: ['characters', 'auth', 'mongo', 'update-primary']});
+                    return res.json({ msg: 'success' })
                 });
-            }
-            else{
-                return res.json();
-            }
+            });
 
-        }).catch(function(err){
-            return res.status(400).json({ message: err });
-        });
-
-        Key.find({ userId: userId }, function(err, keys){
-
-            for(var x = 0; x < keys.length; x++) {
-                var key = keys[x];
-
-                for(var i = 0; i < key.characters.length; i++) {
-                    if(key.characters[i].id == req.params.characterId ){
-                    }
-                }
-            }
-
-
-        });
 
     };
 

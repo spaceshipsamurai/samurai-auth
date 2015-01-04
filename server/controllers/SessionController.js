@@ -43,6 +43,7 @@ exports.getCurrentUser = function(req, res, next) {
         user.email = req.user.email;
         user.character = req.user.character;
         user.services = req.user.services;
+        user.primary = req.user.primary;
     }
     else
     {
@@ -52,10 +53,12 @@ exports.getCurrentUser = function(req, res, next) {
 
     Promise.props({
         characters: KeyService.getCharacters({ userId: req.user._id, validOnly: true }),
-        groups: Membership.getActiveMembershipsByUser(req.user._id)
+        groups: Membership.getActiveMembershipsByUser(req.user._id),
+        pending: Membership.getPendingByUser(req.user._id)
     }).then(function(result){
         user.characters = result.characters;
         user.groups = result.groups;
+        user.pending = result.pending;
         res.json(user);
     }).catch(function(err){
         next({ msg: err, tags: ['auth', 'session']})

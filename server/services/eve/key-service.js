@@ -51,6 +51,7 @@ module.exports = function(){
                         var characterModel = new Character({
                             _id: mongoose.Types.ObjectId(),
                             name: character.characterName,
+                            user: params.userId,
                             key: key._id,
                             corporation: {
                                 id: character.corporationID,

@@ -6,29 +6,29 @@
          .form-group
             label.col-md-3.control-label.ui-sortable Name
             .col-md-9.ui-sortable
-               input(type="text", placeholder="Group Name").form-control
+               input(type="text", placeholder="Group Name", ng-model="group.name").form-control
          .form-group
             label.col-md-3.control-label.ui-sortable Description
             .col-md-9.ui-sortable
-               textarea(row="5", placeholder="Description").form-control
+               textarea(row="5", placeholder="Description", ng-model="group.description").form-control
          .form-group
             label.col-md-3.control-label.ui-sortable Owner
             .col-md-8.ui-sortable
-               select(ng-options="user.primary.name for user in primaries",
-                        ng-model="groupOwner", data-live-search="true",
+               select(ng-options="user._id as user.primary.name for user in primaries track by user._id",
+                        ng-model="group.owner", data-live-search="true",
                         data-style="btn-white", select-two="{ minimumInputLength: 2 }").form-control
          .form-group
             label.col-md-3.control-label.ui-sortable Managers
             .col-md-8.ui-sortable
-               select(ng-options="user.primary.name for user in primaries",
-                  ng-model="groupManagers", data-live-search="true",
+               select(ng-options="user._id as user.primary.name for user in primaries track by user._id",
+                  ng-model="group.managers", data-live-search="true",
                   data-style="btn-white", select-two="{ minimumInputLength: 2 }", multiple).form-control
          .form-group
             label.col-md-3.control-label.ui-sortable Forum Group
             .col-md-9.ui-sortable
-               input(type="text", placeholder="Forum Group ID").form-control
+               input(type="text", placeholder="Forum Group ID", ng-model="group.forum").form-control
          .form-group
             label.col-md-3.control-label.ui-sortable Teamspeak Group
             .col-md-9.ui-sortable
-               input(type="text", placeholder="Teamspeak Group ID").form-control
-      button.btn.btn-primary.pull-right Save
+               input(type="text", placeholder="Teamspeak Group ID", ng-model="group.teamspeak").form-control
+         button(type="submit", ng-click="save(group)").btn.btn-primary.pull-right Save

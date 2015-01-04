@@ -1,7 +1,7 @@
-.panel.panel-primary
+.panel.panel-primary(ng-if="group")
    .panel-heading
-      div.btn-group.pull-right(ng-if="!userIsMember()")
-         button.btn.btn-success.pull-right(type="button")
+      div.btn-group.pull-right(ng-if="!userIsMember() && !group.isPrivate")
+         button.btn.btn-success.pull-right(type="button", ng-click="applyToGroup(group)")
             | Apply
       ul(id="{{ group._id }}", ng-if="isGroupAdmin()").nav.nav-tabs.pull-right.m-r-10
          li(ng-class="{ active: group.view === 'info' || !group.view }")
@@ -12,6 +12,10 @@
             a(href="javascript:void(0);", ng-click="viewMembers(group)")
                i.fa.fa-users
                span.hidden-xs   Members
+         li(ng-class="{ active: group.view === 'admin' }", ng-if="isAdmin()")
+            a(href="javascript:void(0);", ng-click="viewAdmin(group)")
+               i.fa.fa-cogs
+               span.hidden-xs   Admin
       h4.panel-title {{ group.name }}
    .panel-body
       div(ng-show="group.view === 'info'")
@@ -22,19 +26,19 @@
                table
                   tr
                      th Owner:
-                     td {{ group.owner.name }}
+                     td {{ group.owner.primary.name }}
                   tr
                      th Managers:
                      td
-                        span(ng-repeat="manager in group.managers") {{ manager.primaryCharacter.name }}
+                        span(ng-repeat="manager in group.managers") {{ manager.primary.name }}
       div(ng-show="group.view === 'members'", ng-if="isGroupAdmin()")
          .row
             .col-md-12
                ul.nav.nav-pills
                   li(role="Presentation", ng-click="group.statusFilter = 'All'", ng-class="{ active: group.statusFilter === 'All'}")
                      a(href="javascript:void(0)") All ({{ group.members.length }})
-                  li(role="Presentation", ng-click="group.statusFilter = 'Member'", ng-class="{ active: group.statusFilter === 'Member'}")
-                     a(href="javascript:void(0)") Member ({{ (group.members | filter: { status: 'Member' }).length }})
+                  li(role="Presentation", ng-click="group.statusFilter = 'Active'", ng-class="{ active: group.statusFilter === 'Active'}")
+                     a(href="javascript:void(0)") Active ({{ (group.members | filter: { status: 'Active' }).length }})
                   li(role="Presentation", ng-click="group.statusFilter = 'Pending'", ng-class="{ active: group.statusFilter === 'Pending'}")
                      a(href="javascript:void(0)") Pending ({{ (group.members | filter: { status: 'Pending' }).length }})
                   li(role="Presentation", ng-click="group.statusFilter = 'Inactive'", ng-class="{ active: group.statusFilter === 'Inactive'}")
@@ -48,15 +52,16 @@
                         th Status
                         th
                   tbody
-                     tr(ng-repeat="member in group.members | filter:getGroupFilter(group)")
-                        td {{ member.name }}
+                     tr(ng-repeat="member in group.members | filter:getGroupMemberFilter(group)")
+                        td {{ member.user.primary.name }}
                         td {{ member.status }}
                         td
                            div.pull-right
                               a(href="javascript:void(0);", title="Approve", ng-if="member.status==='Pending'", ng-click="approveMember(group, member)").m-r-10
                                  i.fa.fa-check-square.fa-2x.text-success
-                              a(href="javascript:void(0);", ng-if="member.status !== 'Pending' && isGroupAdmin()").m-r-10
-                                 i.fa.fa-star.fa-2x(style="color: #FFD700", title="Remove as owner")
-                                 i.fa.fa-star.fa-2x(style="color: #C1CCD1", title="Set as owner")
                               a(href="javascript:void(0);", title="Remove Character", ng-click="removeMember(member)" ng-if="isGroupAdmin()").m-r-10
                                  i.fa.fa-trash.fa-2x.text-danger
+      div(ng-show="group.view === 'admin'", ng-if="isAdmin()")
+         .row
+            .col-md-12
+               button(ng-click="delete(group)").btn.btn-danger Delete Group

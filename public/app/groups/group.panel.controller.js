@@ -14,58 +14,13 @@
         });
 
         var isManager = function() {
-            var members = $scope.getUserMembers();
-
-            for(var x = 0; x < members.length; x++)
-            {
-                for(var y = 0; y < group.managers.length; y++)
-                {
-                    if(group[y].id === members[x].id) return true;
-                }
-            }
+            if(!user) return false;
+            return group.managers.indexOf(user._id) > -1;
         };
 
         var isOwner = function() {
             if(!user || !user.groups) return false;
-            var members = $scope.getUserMembers();
-
-            for(var x = 0; x < members.length; x++)
-            {
-                if(group.owner && group.owner.id === members[x].id) return true;
-            }
-        };
-
-        $scope.hasMembers = function() {
-            if(!user || !user.groups) return false;
-            return user.groups[group.name] !== undefined;
-        };
-
-        $scope.getUserMembers = function() {
-            if(!user || !user.groups || !user.groups[group.name]) return [];
-            return user.groups[group.name].characters;
-        };
-
-        $scope.getAvailableCharacters = function() {
-            if(!user || !user.groups) return [];
-            if(!user.groups[group.name]) return user.characters;
-
-            var existingCharacters = user.groups[group.name].characters;
-            var existingIds = [];
-
-            for(var x = 0; x < existingCharacters.length; x++)
-            {
-                existingIds.push(existingCharacters[x].id);
-            }
-
-            var available = [];
-
-            for(var x = 0; x < user.characters.length; x++)
-            {
-                if(existingIds.indexOf(user.characters[x].id) === -1)
-                    available.push(user.characters[x]);
-            }
-
-            return available;
+            return group.owner === user._id;
         };
 
         $scope.isGroupAdmin = function(){
@@ -74,18 +29,19 @@
         };
 
         $scope.isOwner = isOwner();
+        $scope.isAdmin = function(){
+            return user && user.isAdmin();
+        };
 
-        $scope.applyToGroup = function(character) {
 
-            $http.post('/api/groups/'+group._id+'/apply', { id: character.id, name: character.name }).success(function(){
+        $scope.applyToGroup = function(group) {
 
-                if(!user.groups[group.name]) {
-                    group.characters = [];
-                    user.groups[group.name] = group;
-                }
+            $http.post('/api/groups/'+group._id+'/apply', {}).success(function(){
 
-                character.status = 'Pending';
-                user.groups[group.name].characters.push(character);
+                alert('Application Submitted');
+                SessionService.getCurrentUser(true).then(function(currentUser){
+                    user = currentUser;
+                });
 
             }).error(function(){
                 alert('Error applying to group, try later');
@@ -94,7 +50,7 @@
         };
 
         $scope.userIsMember = function() {
-            return user.groups[group.name] !== undefined;
+            return user && (user.groups[group.name] || user.pending[group.name]);
         };
 
         $scope.viewInfo = function(group) {
@@ -104,9 +60,13 @@
         $scope.viewMembers = function(group) {
             group.view = 'members';
 
-            $http.get('/api/admin/groups/' + group._id + '/members').success(function(data){
+            $http.get('/api/groups/' + group._id + '/members').success(function(data){
                 group.members = data;
             });
+        };
+
+        $scope.viewAdmin = function(group) {
+            group.view = 'admin';
         };
 
         $scope.getGroupMemberFilter = function(group){
@@ -119,7 +79,7 @@
 
         $scope.approveMember = function(group, member){
 
-            $http.post('/api/admin/groups/' + group._id + '/members/' + member.id + '/approve', {})
+            $http.post('/api/groups/' + group._id + '/members/' + member.user._id + '/approve', {})
                 .success(function(){
                     member.status = 'Member';
                 }).error(function(err){
@@ -129,14 +89,22 @@
         };
 
         $scope.removeMember = function(member) {
-            $http.delete('/api/admin/groups/' + group._id + '/members/' + member.id).success(function() {
+            $http.delete('/api/groups/' + group._id + '/members/' + member.user._id).success(function() {
                 for(var x = 0; x < group.members.length; x++){
-                    if(group.members[x].id === member.id) group.members.splice(x, 1);
+                    if(group.members[x]._id === member._id) group.members.splice(x, 1);
                 }
             }).error(function(err){
                 alert('error removing character:  ' + err);
             });
         }
+
+        $scope.delete = function(group) {
+            $http.delete('/api/groups/' + group._id).success(function(){
+                delete $scope.group;
+            }).error(function(err){
+                alert(err);
+            });
+        };
 
     };
 

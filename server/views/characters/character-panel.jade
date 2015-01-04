@@ -1,0 +1,9 @@
+.panel.panel-primary
+   .panel-heading
+      h4.panel-title.pull-left {{ character.name }}
+      a(href="javascript:void(0);", title="Make Primary", ng-click="setAsPrimary(character)").pull-right
+         i.fa.fa-star.fa-lg(ng-if="isPrimary(character)", style="color: #FFFF00")
+         i.fa.fa-star.fa-lg(ng-if="!isPrimary(character)", style="color: #FFF")
+      div(style="clear: both")
+   .panel-body
+      | API Goodness coming soon™....
