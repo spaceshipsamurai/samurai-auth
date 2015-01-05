@@ -9,7 +9,7 @@ exports.add = function(req, res) {
     if(!req.body)
         return res.status(400).json({ message: 'Invalid data'});
 
-    if(!req.user.character)
+    if(!req.user.primary)
         return res.status(400).json({ message: 'User does not have a primary character set'});
 
     var batch = req.body,
@@ -43,7 +43,7 @@ exports.add = function(req, res) {
             names.push({
                 createdDate: new Date(),
                 createdBy: req.user._id,
-                corporation: req.user.character.corporation.id,
+                corporation: req.user.primary.corporation.id,
                 system: batch.location,
                 name: batch.names[x]
             });
