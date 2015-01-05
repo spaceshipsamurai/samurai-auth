@@ -26,29 +26,50 @@ db.on("error", function(errorObject){
 db.once('open', function() {
     console.log('Mono DB connection open, starting migration...');
 
-    Key.find({}, function(err, keys){
+    Key.update({}, { $unset: { characters: 1 }}, function(err){
 
-        for(var x = 0; x < keys.length; x++)
-        {
+        if(err) console.log(err);
+        else {
 
-            Character.find({ key: keys[x]._id })
-                .populate('key')
-                .exec(function(err, characters){
+            Key.update({}, { $set: { characters: [] }}, function(err){
+                if(err) console.log(err);
+                else {
 
-                    var clist = [];
+                    Key.find({}, function(err, keys){
 
-                    for(var c = 0; c < characters.length; c++)
-                    {
-                        clist.push(characters[c]._id );
-                    }
-
-                    characters[0].key.characters = clist;
-                    characters[0].key.save(function(err){
                         if(err) console.log(err);
-                        else console.log('Fixed key-characters for ' + characters[0].key._id);
-                    })
+                        else {
 
-                });
+                            for(var k = 0; k < keys.length; k++)
+                            {
+                                Character.find({ key: keys[k]._id })
+                                    .populate('key')
+                                    .exec(function(err, characters){
+
+                                        var cids = [];
+
+                                        for(var x = 0; x < characters.length; x++)
+                                            cids.push(characters[x]._id);
+
+                                        if(characters.length > 0)
+                                        {
+                                            characters[0].key.characters = cids;
+                                            characters[0].key.save(function(err){
+                                                if(err) console.log(err);
+                                                else console.log('Updated ' + characters[0].key._id);
+                                            })
+                                        }
+
+                                    });
+                            }
+
+                        }
+
+                    });
+
+                }
+            });
+
         }
 
     });
