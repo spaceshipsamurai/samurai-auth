@@ -26,7 +26,7 @@ div.row
         div.panel.panel-primary
             div.panel-heading
                 h3.panel-title Jabber Account (Alpha)
-            div.panel-body(ng-if="services.jabber")
+            div.panel-body(ng-if="services.jabber && services.jabber.username")
                 div.row
                     div.col-md-10
                         form.form-horizontal
