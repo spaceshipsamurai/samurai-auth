@@ -4,7 +4,8 @@ var encrypt = require('../services/encryption'),
     owasp = require('owasp-password-strength-test'),
     logger = require('../config/logger'),
     path = require('path'),
-    config = require('../config/config').getConfig();
+    config = require('../config/config').getConfig(),
+    fs = require('fs');
 
 module.exports = function(User) {
 
@@ -199,21 +200,20 @@ module.exports = function(User) {
                 return res.send({ success: false, errors: [ err.message ] });
             }
 
-            jade.renderFile(path.join(config.rootPath, 'server/views/emails/confirmation.jade'), { confirmation_link: 'http://auth.spaceshipsamurai.com/account/activate/' + confirmId }, function(err, text) {
+            fs.readFile(path.join(config.rootPath, 'server/views/emails/confirm_template.html'), 'utf8', function(err, data){
 
-                if(err) {
-                    logger.log(logger.level.critical, err);
-                }
+                if(err) logger.log(logger.level.critical, err);
                 else {
+
+                    data = data.replace(/\{activation link}/g, 'http://auth.spaceshipsamurai.com/account/activate/' + confirmId );
 
                     mailer.send({
                         from: 'noreply@spaceshipsamurai.com',
                         fromname: 'Spaceship Samurai',
                         to: req.body.email,
                         subject: 'Account Confirmation',
-                        text: text
+                        html: data
                     });
-
                 }
 
             });
