@@ -33,8 +33,8 @@ exports.setJabberUser = function(req, res, next) {
 
 
         var name = character.name;
-        name = name.replace(' ', '_');
-        name = name.replace('\'', '_');
+        name = name.replace(/ /g, '_');
+        name = name.replace(/'/g, '_');
         name = name.toLowerCase();
 
         user.services.jabber.username = name;
