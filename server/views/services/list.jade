@@ -42,7 +42,7 @@ div.row
                                     button.btn.btn-primary(ng-click="updateJabberPassword(jabberPass)") Update
                     div.col-md-2
                         img.pull-right.img-rounded(ng-src="//image.eveonline.com/Character/{{ services.forum.characterId }}_64.jpg", alt="{{ services.forum.name }}", title="{{ services.forum.name }}", style="margin-right: 10px")
-            div.panel-body(ng-if="!services.jabber")
+            div.panel-body(ng-if="!services.jabber || !services.jabber.username")
                 div.row
                     .col-md-12
                         | To use jabber you must select which character you wish to connect as. This should be the character that you are commonly known as in game.
