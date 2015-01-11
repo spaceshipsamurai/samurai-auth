@@ -5,14 +5,14 @@
  */
 
 
-var config = require('../../config/config').getConfig(),
+var config = require('../server/config/config').getConfig(),
     mongoose = require('mongoose');
 
 mongoose.connect(config.mongoDb);
 var db = mongoose.connection;
 
-require('../../models/eve/Character');
-require('../../models/eve/Key');
+require('../server/models/eve/Character');
+require('../server/models/eve/Key');
 
 
 var Key = mongoose.model('Key');

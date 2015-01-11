@@ -3,4 +3,7 @@ require('./account/Member');
 require('./account/User');
 require('./eve/Key');
 require('./eve/Character');
+require('./eve/Alliance');
+require('./eve/Corporation');
 require('./recruitment/Recruit');
+require('./system/CronJob');

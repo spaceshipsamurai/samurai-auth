@@ -1,4 +1,4 @@
-var config = require('../config/config').getConfig(),
+var config = require('../server/config/config').getConfig(),
     mongoose = require('mongoose'),
     jade = require('jade'),
     path = require('path');
@@ -6,7 +6,7 @@ var config = require('../config/config').getConfig(),
 mongoose.connect(config.mongoDb);
 var db = mongoose.connection;
 
-require('../models/account/User');
+require('../server/models/account/User');
 var User = mongoose.model('User');
 
 db.on("error", function(errorObject){

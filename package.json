@@ -18,7 +18,8 @@
     "sendgrid": "~1.2.0",
     "bluebird": "~2.3.10",
     "request": "~2.51.0",
-    "xml2js": "~0.4.4"
+    "xml2js": "~0.4.4",
+    "moment": "~2.9.0"
   },
   "devDependencies": {
     "morgan": "~1.1.1",

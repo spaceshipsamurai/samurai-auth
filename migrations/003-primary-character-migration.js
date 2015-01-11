@@ -6,14 +6,14 @@
  */
 
 
-var config = require('../../config/config').getConfig(),
+var config = require('../server/config/config').getConfig(),
     mongoose = require('mongoose');
 
 mongoose.connect(config.mongoDb);
 var db = mongoose.connection;
 
-require('../../models/account/User');
-require('../../models/eve/Character');
+require('../server/models/account/User');
+require('../server/models/eve/Character');
 
 var User = mongoose.model('User');
 var Character = mongoose.model('Character');
