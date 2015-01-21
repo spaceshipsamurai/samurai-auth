@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
 
-var memberSchema = mongoose.Schema({
+var schema = mongoose.Schema({
     group: { type: Schema.ObjectId, ref: 'Group'},
     user: { type: Schema.ObjectId, ref: 'User' },
     status: { type: String, enum: ['Pending', 'Active', 'Inactive']},
@@ -13,6 +13,8 @@ var memberSchema = mongoose.Schema({
     manager: Boolean
 });
 
-var Member = mongoose.model('Member', memberSchema);
 
-module.exports = Member;
+
+var Model = mongoose.model('Member', schema);
+
+module.exports = Model;

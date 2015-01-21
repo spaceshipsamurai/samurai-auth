@@ -75,16 +75,27 @@ function login_samurai($username, $password, $ip = '', $browser = '', $forwarded
 		); 
     }	
 
-    if(!array_key_exists('character', $authUser))
+    if(!array_key_exists('primary', $authUser))
     {
 		return array(
 			'status'	=> LOGIN_ERROR_USERNAME,
 			'error_msg'	=> 'AUTH_NO_PRIMARY',
 			'user_row'	=> array('user_id' => ANONYMOUS),
-		);         
+		);
     }
 
-    $username = $authUser['character']['name'];
+    $character = $keyRepo->getCharacter($authUser['_id'], $authUser['primary']);
+
+    if(is_null($character) || !array_key_exists('name', $character))
+    {
+		return array(
+			'status'	=> LOGIN_ERROR_USERNAME,
+			'error_msg'	=> 'AUTH_NO_PRIMARY',
+			'user_row'	=> array('user_id' => ANONYMOUS),
+		);
+    }
+
+    $username = $character['name'];
 
 	$username_clean = utf8_clean_string($username);
 

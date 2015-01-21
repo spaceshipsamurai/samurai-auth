@@ -10,7 +10,8 @@ var schema = mongoose.Schema({
     executor: Number,
     ticker: String,
     name: String,
-    watchCorps: { type: Boolean, default: false }
+    watchCorps: { type: Boolean, default: false },
+    coalitionMember: { type: Boolean, default: false }
 });
 
 var Alliance = mongoose.model('Alliance', schema);

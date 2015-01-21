@@ -19,7 +19,8 @@ var schema = Schema({
     },
     url: String,
     taxRate: Number,
-    ticker: String
+    ticker: String,
+    coalitionMember: { type: Boolean, default: false }
 });
 
 schema.methods.sync = function(id, vcode) {

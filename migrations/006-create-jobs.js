@@ -47,6 +47,16 @@ db.once('open', function() {
         history: []
     }, complete);
 
+    Job.create({
+        name: 'Key Sync',
+        script: 'key-sync',
+        interval: {
+            increment: 10,
+            unit: 'minutes'
+        },
+        history: []
+    }, complete);
+
 });
 
 

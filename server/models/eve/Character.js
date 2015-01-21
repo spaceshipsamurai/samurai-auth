@@ -113,6 +113,18 @@ schema.methods.syncPublic = function() {
 
 };
 
+schema.methods.makePrimary = function() {
+
+    var self = this;
+
+    User.findOne({ _id: self.user }, function(err, user){
+        if(!user) return;
+        user.primary = self._id;
+        user.save().exec();
+    });
+
+};
+
 schema.statics.syncWithKey = function(key) {
 
     var self = this;
