@@ -22,10 +22,8 @@ module.exports = function() {
             vCode: req.body.vCode,
             userId: req.user._id
         }).then(function(key){
-            console.log('success');
             return res.json(key.toObject);
         }, function(err){
-            console.log('error');
             return res.status(400).json({ message: err });
         });
 

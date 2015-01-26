@@ -11,7 +11,11 @@ var schema = mongoose.Schema({
     ticker: String,
     name: String,
     watchCorps: { type: Boolean, default: false },
-    coalitionMember: { type: Boolean, default: false }
+    coalitionMember: { type: Boolean, default: false },
+    isPrimary: { type: Boolean, default: false },
+    forumGroup: Number,
+    teamspeakGroup: Number,
+    jabberGroup: String
 });
 
 var Alliance = mongoose.model('Alliance', schema);

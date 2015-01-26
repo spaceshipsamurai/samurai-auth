@@ -1,0 +1,44 @@
+h2.pull-left Alliances
+div.pull-right.col-md-4
+    form.form-inline
+        .form-group.col-md-10
+            select(ng-options="alliance.id as alliance.name for alliance in allAlliances track by alliance.id",
+                    ng-model="newAllianceId", data-live-search="true", data-style="btn-white",
+                    select-two="{ minimumInputLength: 2, placeholder: 'Alliance Name' }").form-control
+        button.btn.btn-primary.col-md-2(ng-click="addAlliance(newAllianceId)") Add
+table.table.table-striped.table-hover
+    thead
+        tr
+            th Name
+            th Watch Corps
+            th Primary
+            th Coalition
+            th Teamspeak Group
+            th Forum Group
+            th Jabber Group
+            th
+    tbody
+        tr(ng-repeat="alliance in alliances | orderBy : name", ng-class="{ warning: alliance.editing }")
+            td {{ alliance.name }}
+            td
+                span(ng-if="!alliance.editing") {{ alliance.watchCorps | boolYesNo }}
+                input(type="checkbox", ng-model="alliance.watchCorps", ng-if="alliance.editing")
+            td
+                span(ng-if="!alliance.editing") {{ alliance.isPrimary | boolYesNo }}
+                input(type="checkbox", ng-model="alliance.isPrimary", ng-if="alliance.editing")
+            td
+                span(ng-if="!alliance.editing") {{ alliance.coalitionMember| boolYesNo }}
+                input(type="checkbox", ng-model="alliance.coalitionMember", ng-if="alliance.editing")
+            td
+                span(ng-if="!alliance.editing") {{ alliance.teamspeakGroup }}
+                input(type="text", ng-model="alliance.teamspeakGroup", ng-if="alliance.editing")
+            td
+                span(ng-if="!alliance.editing") {{ alliance.forumGroup }}
+                input(type="text", ng-model="alliance.forumGroup", ng-if="alliance.editing")
+            td
+                span(ng-if="!alliance.editing") {{ alliance.jabberGroup }}
+                input(type="text", ng-model="alliance.jabberGroup", ng-if="alliance.editing")
+            td
+                button.btn.btn-primary(ng-if="!alliance.editing", ng-click="edit(alliance)") Edit
+                button.btn.btn-success(ng-if="alliance.editing", ng-click="save(alliance)") Save
+                button.btn.btn-danger.m-l-10(ng-if="alliance.editing", ng-click="cancel(alliance)") Cancel

@@ -22,6 +22,8 @@ module.exports = function(app) {
     require('./account/groups')(app, controllerDir);
     require('./eve/keys')(app, controllerDir);
     require('./eve/characters')(app, controllerDir);
+    require('./eve/corporation')(app, controllerDir);
+    require('./eve/alliance')(app, controllerDir);
     require('./recruitment/recruitment')(app, controllerDir);
 
 

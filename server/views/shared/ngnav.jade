@@ -23,3 +23,6 @@ navigation
             i.fa.fa-lg.fa-fw.fa-external-link.pull-right
    li.nav-header(ng-if="isAdmin()") Admin
    nav-item(state="groupAdmin", title="Group Management", icon="fa-users", ng-if="isAdmin()")
+   nav-group(authorize="['Admins']", title="Entity Management", icon="fa-share-alt")
+        nav-item(state="entities.alliance", title="Alliances")
+        nav-item(state="entities.corporation", title="Corporations")

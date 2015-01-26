@@ -28,7 +28,6 @@ schema.methods.sync = function(id, vcode) {
     var client, self = this;
 
     if(id && vcode) {
-        console.log('ID AND VCODE');
         client = new neow.EveClient({
             keyID: id,
             vCode: vcode

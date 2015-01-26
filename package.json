@@ -19,7 +19,8 @@
     "bluebird": "~2.3.10",
     "request": "~2.51.0",
     "xml2js": "~0.4.4",
-    "moment": "~2.9.0"
+    "moment": "~2.9.0",
+    "async": "~0.9.0"
   },
   "devDependencies": {
     "morgan": "~1.1.1",

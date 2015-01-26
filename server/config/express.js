@@ -35,7 +35,14 @@ module.exports = function (app, config) {
 
     //error handling
     app.use(function(err, req, res, next){
-        logger.log(logger.level.critical, err.msg, err.tags);
+
+
+
+        if(err.msg)
+            err = err.msg;
+
+        logger.log(logger.level.critical, err, ['api', 'express']);
+
         res.status(500).json({ message: 'Internal Server Error' });
     });
 };
