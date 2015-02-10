@@ -28,10 +28,14 @@ module.exports = function () {
         User.findById(id)
             .populate('primary')
             .exec(function(err, user){
-            Membership.getActiveMembershipsByUser(user._id).then(function(memberships){
-                user.groups = memberships;
-                done(err, user);
-            });
+
+                if(err) return done(err, null);
+                if(!user) return done(null, null);
+
+                Membership.getActiveMembershipsByUser(user._id).then(function(memberships){
+                    user.groups = memberships;
+                    done(err, user);
+                });
         });
 
     });

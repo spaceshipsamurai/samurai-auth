@@ -1,4 +1,7 @@
-var Member = require('mongoose').model('Member'),
+var mongoose = require('mongoose'),
+    Member = mongoose.model('Member'),
+    User = mongoose.model('User'),
+    Key = mongoose.model('Key'),
     Promise = require('bluebird');
 
 exports.apply = function(groupId, userId) {
@@ -56,21 +59,31 @@ exports.getActiveMembershipsByUser = function(userId) {
 
     return new Promise(function(resolve, reject){
 
-        Member.find({ user: userId, status: 'Active' }, 'group')
-            .populate('group')
-            .exec(function(err, memberships){
-                var groups = {
-                    count: memberships.length
-                };
+        User.findOne({ _id: userId }, function(err, user){
 
-                for(var x = 0; x < memberships.length; x++)
-                {
-                    groups[memberships[x].group.name] = memberships[x].group;
-                }
+            if(err) return reject(err);
+            if(!user) return resolve( { count: 0 });
+
+                Member.find({ user: userId, status: 'Active' })
+                    .populate('group')
+                    .exec(function(err, memberships){
+                        if(err) return reject(err);
+
+                        var groups = {
+                            count: memberships.length
+                        };
+
+                        for(var x = 0; x < memberships.length; x++)
+                        {
+                            groups[memberships[x].group.name] = memberships[x].group;
+                        }
 
 
-                return resolve(groups);
-            });
+                        return resolve(groups);
+
+                    });
+
+        });
 
     });
 

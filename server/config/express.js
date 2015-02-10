@@ -41,7 +41,7 @@ module.exports = function (app, config) {
         if(err.msg)
             err = err.msg;
 
-        logger.log(logger.level.critical, err, ['api', 'express']);
+        logger.error(err, ['api', 'express']);
 
         res.status(500).json({ message: 'Internal Server Error' });
     });

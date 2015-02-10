@@ -5,26 +5,6 @@ div.row
     div.col-md-12.col-lg-7
         div.panel.panel-primary
             div.panel-heading
-                h3.panel-title Forum Account
-            div.panel-body(ng-if="services.forum")
-                div.row
-                    div.col-md-10
-                        | {{ services.forum.name }} <br/>
-                        p The username and password used to sign into this service portal will also work for the forums. Groups will be assigned based on your auth groups, corporation and alliance.
-                    div.col-md-2
-                        img.pull-right.img-rounded(ng-src="//image.eveonline.com/Character/{{ services.forum.characterId }}_64.jpg", alt="{{ services.forum.name }}", title="{{ services.forum.name }}", style="margin-right: 10px")
-            div.panel-body(ng-if="!services.forum")
-                div.row
-                    .col-md-12
-                        | To use the forums you must select which character you wish to post as. This should be the character that you are commonly known as in game.
-                .row.m-t-10
-                    .col-md-12
-                        .col-md-2(ng-repeat="character in characters")
-                            img.img-rounded(ng-src="//image.eveonline.com/Character/{{ character.id }}_64.jpg", alt="{{ character.name }}", title="{{ character.name }}", style="margin-right: 10px")
-                            button.btn.btn-primary.m-t-10(ng-click="setForumUser(character)") Select
-    div.col-md-12.col-lg-7
-        div.panel.panel-primary
-            div.panel-heading
                 h3.panel-title Jabber Account (Alpha)
             div.panel-body(ng-if="services.jabber && services.jabber.username")
                 div.row

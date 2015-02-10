@@ -7,43 +7,6 @@ div.row
             i.fa.fa-plus(style="margin-right: 10px")
             | Create Key
 div.row
-    div.col-md-12
-        table.table.table-hover
-            thead
-                tr
-                    th Key Id
-                    th Verification Code
-                    th Characters
-                    th
-            tbody
-                tr(ng-show="keys.length == 0 && !newKey")
-                    td(colspan="4", style="padding: 10px;") You do not have any keys
-                tr(ng-show="newKey")
-                    td(style="width: 150px;")
-                        input.form-control(ng-model="newKey.keyID", placeholder="Key ID")
-                    td
-                        input.form-control(ng-model="newKey.vCode", placeholder="Verification Code")
-                    td
-                        div(ng-show="error", style="line-height: 30px", role="alert").alert.alert-danger
-                            | {{ error }}
-                        div(ng-show="!error", style="line-height: 30px")
-                            a(href="https://community.eveonline.com/support/api-key/CreatePredefined?accessMask=268435455", target="_blank") Create Eve API Key
-                    td(style="width: 300px;")
-                        button.btn.btn-success(ng-click="save()")
-                            i.fa.fa-save(style="margin-right: 10px")
-                            | Save
-                        button.btn.btn-danger(style="margin-left: 10px", ng-click="newKey = undefined; error = undefined")
-                            i.fa.fa-ban(style="margin-right: 10px")
-                            | Cancel
-                tr(ng-show="keys" ng-repeat="key in keys")
-                    td
-                        | {{ key.keyId }}
-                    td
-                        | {{ key.vCode }}
-                    td
-                        div.pull-left(ng-repeat="character in key.characters", style="margin-right: 10px")
-                            img.img-rounded(ng-src='{{ characterImage(character.id, 64) }}', alt='{{ character.name }}', title='{{ character.name }}')
-                    td
-                        button.btn.btn-danger(ng-click="deleteKey(key.keyId)")
-                            i.fa.fa-trash(style="margin-right: 10px")
-                            | Delete
+    .col-lg-6.col-md-12
+        include key_create
+        key-panel(ng-repeat="key in keys", key="key")

@@ -52,7 +52,7 @@ exports.getCurrentUser = function(req, res, next) {
 
 
     Promise.props({
-        characters: KeyService.getCharacters({ userId: req.user._id, validOnly: true }),
+        characters: [],
         groups: Membership.getActiveMembershipsByUser(req.user._id),
         pending: Membership.getPendingByUser(req.user._id)
     }).then(function(result){

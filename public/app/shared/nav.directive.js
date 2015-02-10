@@ -20,7 +20,8 @@ angular.module('app.navigation')
             scope: {
                 icon: '@',
                 title: '@',
-                active: '=?'
+                active: '=?',
+                authorize: '='
             },
             link: function(scope, element) {
 
@@ -43,7 +44,7 @@ angular.module('app.navigation')
 
             },
             template: '\
-				<li class="has-sub" ng-class="{ active: active }">\
+				<li class="has-sub" ng-class="{ active: active }" ng-show="isAuthorized()">\
 					<a href="javascript:void(0)">\
                         <b class="caret pull-right"/>\
 						<i data-ng-if="icon" class="fa fa-lg fa-fw {{ icon }}"></i>\

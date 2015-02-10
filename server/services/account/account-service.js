@@ -6,91 +6,32 @@ var Promise = require('bluebird'),
     Member = mongoose.model('Member'),
     Group = mongoose.model('Group'),
     async = require('async'),
+    logger = require('../../config/logger'),
     allianceService = require('../eve/alliance-service')();
 
 module.exports = function () {
 
-    var setAllMemberships = function(status, memberships) {
+    var deactivate = function(userId) {
 
-        var promises = [];
+        User.findOne({ _id: userId }, function(err, user){
 
-        for(var x = 0; x < memberships.length; x++) {
-            memberships[x].status = status;
-            promises.push(Promise.promisify(memberships[x].save, memberships[x]));
-        }
+            if(err) {
+                logger.error(err, ['account-service','mongoose']);
+                return;
+            }
 
-        return Promise.all(promises);
+            Member.find({ user: user._id }, function(err, members){
 
-    };
+                if(err) {
+                    logger.error(err, ['account-service','mongoose']);
+                    return;
+                }
 
-    var sync = function (userId) {
-
-        return new Promise(function (resolve, reject) {
-
-            User.findOne({_id: userId}, function (err, user) {
-
-                if(err) return reject(err);
-
-                async.parallel([function (cb) {
-                    Member.find({user: user._id})
-                        .populate('group')
-                        .exec(function (err, members) {
-                            if (err) return cb(err, null);
-                            cb(null, members);
-                        })
-                }, function (cb) {
-                    Key.findOne({characters: user.primary})
-                        .populate('characters')
-                        .exec(function (err, key) {
-                            if (err) return cb(err, null);
-                            cb(null, key);
-                        });
-                }], function (err, results) {
-
-                    if (err) return reject(err);
-
-                    var members = results[0];
-                    var key = results[1];
-                    var character;
-
-                    if(key.status === 'Invalid')
-                    {
-                        setAllMemberships('Inactive', members).then(function(){
-                            return resolve();
-                        })
-                    }
-
-                    var chars = key.characters.filter(function (c) {
-                        return c._id.equals(user.primary);
-                    });
-
-                    if (chars)
-                        character = chars[0];
-                    else
-                        return reject('Error trying to find primary character');
-
-                    if (!character.alliance || character.alliance.id == 0) {
-                        setAllMemberships('Inactive', members).then(function(){
-                            return resolve();
-                        });
-                    }
-
-
-                    allianceService.getType(character.alliance.id).then(function (type) {
-                        if (type === 'Primary') {
-                            setAllMemberships('Active', members).then(function(){
-                                return resolve();
-                            })
-                        }
-                        else {
-                            setAllMemberships('Inactive', members).then(function(){
-                                return resolve();
-                            })
-                        }
-                    });
-
-
-                })
+                for(var x = 0; x < members.length; x++)
+                {
+                    members[x].status = 'Inactive';
+                    members[x].save().exec();
+                }
 
             });
 
@@ -98,9 +39,37 @@ module.exports = function () {
 
     };
 
+    var activate = function(userId) {
+
+        User.findOne({ _id: userId }, function(err, user){
+
+            if(err) {
+                logger.error(err, ['account-service','mongoose']);
+                return;
+            }
+
+            Member.find({ user: user._id }, function(err, members){
+
+                if(err) {
+                    logger.error(err, ['account-service','mongoose']);
+                    return;
+                }
+
+                for(var x = 0; x < members.length; x++)
+                {
+                    members[x].status = 'Active';
+                    members[x].save().exec();
+                }
+
+            });
+
+        });
+
+    };
 
     return {
-        sync: sync
+        deactivate: deactivate,
+        activate: activate
     }
 
 };

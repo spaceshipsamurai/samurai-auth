@@ -10,7 +10,7 @@ module.exports = function(config) {
     require('../models');
 
     db.on("error", function(errorObject){
-        logger.log(logger.level.critical, errorObject);
+        logger.error(errorObject, ['mongoose', 'uncaught']);
     });
 
     db.once('open', function() {

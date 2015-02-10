@@ -7,14 +7,15 @@
 
 var config = require('../server/config/config').getConfig(),
     mongoose = require('mongoose'),
-    Promise = require('bluebird');
+    Promise = require('bluebird'),
+    logger = require('../server/config/logger');
 
 mongoose.connect(config.mongoDb);
 var db = mongoose.connection;
 
 
 db.on("error", function(errorObject){
-    console.log(errorObject);
+    logger.err(errorObject, ['cron', 'mongoose'])
 });
 
 
@@ -29,7 +30,7 @@ db.once('open', function() {
     var currentTime = new moment();
 
     Job.find({ nextRun: { $lt: currentTime }, status: 'Idle' }, function(err, jobs){
-        if(err) console.log(err);
+        if(err) logger.error(err, ['cron']);
         else {
 
             var promises = [];
@@ -42,6 +43,8 @@ db.once('open', function() {
 
             Promise.all(promises).then(function(){
                 mongoose.connection.close();
+            }).catch(function(err){
+                logger.error(err, ['cron']);
             });
         }
     });

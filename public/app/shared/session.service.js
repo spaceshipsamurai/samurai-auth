@@ -1,6 +1,7 @@
 angular.module('ssAuth').factory('SessionService', ['$http', '$cookies', '$q', function($http, $cookies, $q){
 
     var currentUser = {};
+    var currentFetch;
 
     currentUser.isAdmin = function() {
         if(!currentUser || !currentUser.groups || !currentUser.groups['Admins']) return false;
@@ -52,13 +53,22 @@ angular.module('ssAuth').factory('SessionService', ['$http', '$cookies', '$q', f
 
     var fetchUpdatedUser = function() {
 
+        //we've already made a call for the current user
+        //just hold your horses
+        if(currentFetch) {
+            return currentFetch;
+        }
+
         var deferred = $q.defer();
+
+        currentFetch = deferred.promise;
 
         $http.get('/session').success(function(user){
             angular.extend(currentUser, user);
             currentUser.lastUpdated = new Date();
             saveToCookie();
             deferred.resolve(currentUser);
+            currentFetch = undefined;
         });
 
         return deferred.promise;

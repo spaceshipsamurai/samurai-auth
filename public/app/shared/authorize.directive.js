@@ -11,7 +11,7 @@
                 SessionService.getCurrentUser().then(function(user){
 
                     for(var x = 0; x < groups.length; x++) {
-                        if(user.groups[groups[x]]) hasGroup = true;
+                        if(user.groups && user.groups[groups[x]]) hasGroup = true;
                     }
 
                     if(!hasGroup) {

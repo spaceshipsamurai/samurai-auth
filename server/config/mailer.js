@@ -13,7 +13,7 @@ exports.send = function(mail, cb) {
         mailer.send(mail, function(err, info) {
 
             if(err) {
-                logger.log(logger.level.critical, err, ['mailer']);
+                logger.critical(err, ['mailer']);
             }
 
             if(typeof cb === 'function')

@@ -1,28 +1,51 @@
 navigation
-   nav-item(state="dashboard", title="Dashboard", icon="fa-dashboard")
-   nav-group(icon="fa-user", title="My Profile")
-      nav-item(state="keys", title="API Keys")
-      nav-item(state="characters", title="Characters")
-      nav-item(state="groups", title="Groups")
-      nav-item(state="services", title="Services")
-   nav-group(icon="fa-envelope", title="Recruitment", authorize="['Recruiters']")
-      nav-item(state="recruitment.list", title="View Names")
-      nav-item(state="recruitment.add", title="Add Names")
-      nav-item(state="recruitment.mail", title="Mail")
-      nav-item(state="recruitment.validation", title="Name Validation")
-   nav-group(icon="fa-external-link", title="Quick Links")
-      li
-         a(href="//forums.spaceshipsamurai.com", target="_blank")
-            i.fa.fa-lg.fa-fw.fa-comment
-            span Forums
-            i.fa.fa-lg.fa-fw.fa-external-link.pull-right
-      li
-         a(href="//kb.spaceshipsamurai.com", target="_blank")
-            i.fa.fa-lg.fa-fw.fa-bomb
-            span Killboard
-            i.fa.fa-lg.fa-fw.fa-external-link.pull-right
-   li.nav-header(ng-if="isAdmin()") Admin
-   nav-item(state="groupAdmin", title="Group Management", icon="fa-users", ng-if="isAdmin()")
-   nav-group(authorize="['Admins']", title="Entity Management", icon="fa-share-alt")
+    li.nav-profile(ng-click="toggleSelect()").p-l-10
+        .image
+            a(href="javascript: void(0);")
+                img(ng-src="{{ getUserImage() }}" alt)
+        div.info
+            div.pull-left
+                | {{ getUserName() }}
+                small {{ getUserAlt() }}
+            div.pull-right
+                i.pull-right.fa.fa-angle-right.fa-3x
+        div.characters.ng-cloak.bg-black-lighter(ng-show="selecting")
+            div(ng-if="!affiliated || affiliated.length === 0")
+                h5(style="color: #fff") Oops. No Characters Found!
+                p It looks like you don't have any API keys added.
+                  |<a class="text-warning" style="font-weight: bold;" ui-sref="keys">Click here</a> to add one to your account.
+            div(ng-if="affiliated && affiliated.length > 0")
+                table.table.table-hover.bg-white.m-b-0
+                    tbody
+                        tr(ng-repeat="character in affiliated", ng-click="setPrimary(character)")
+                            td
+                                img.m-t-10.img-rounded(ng-src='http://image.eveonline.com/Character/{{ character.id }}_32.jpg', alt='{{ character.name }}', title='{{ character.name }}')
+                            td
+                                h5(style="padding-bottom: 0px; margin-bottom: 0px") {{  character.name }}
+                                small.text-primary {{ character.alliance.name }}
+    nav-item(state="dashboard", title="Dashboard", icon="fa-dashboard")
+    nav-group(icon="fa-user", title="My Profile")
+        nav-item(state="keys", title="API Keys")
+        nav-item(state="groups", title="Groups")
+        nav-item(state="services", title="Services")
+    nav-group(icon="fa-envelope", title="Recruitment", authorize="['Admins', 'Recruiters']")
+        nav-item(state="recruitment.list", title="View Names")
+        nav-item(state="recruitment.add", title="Add Names")
+        nav-item(state="recruitment.mail", title="Mail")
+        nav-item(state="recruitment.validation", title="Name Validation")
+    nav-group(icon="fa-external-link", title="Quick Links")
+        li
+            a(href="//forums.spaceshipsamurai.com", target="_blank")
+                i.fa.fa-lg.fa-fw.fa-comment
+                span Forums
+                i.fa.fa-lg.fa-fw.fa-external-link.pull-right
+        li
+            a(href="//kb.spaceshipsamurai.com", target="_blank")
+                i.fa.fa-lg.fa-fw.fa-bomb
+                span Killboard
+                i.fa.fa-lg.fa-fw.fa-external-link.pull-right
+    li.nav-header(ng-if="isAdmin()") Admin
+    nav-item(state="groupAdmin", title="Group Management", icon="fa-users", ng-if="isAdmin()")
+    nav-group(authorize="['Admins']", title="Entity Management", icon="fa-share-alt")
         nav-item(state="entities.alliance", title="Alliances")
         nav-item(state="entities.corporation", title="Corporations")

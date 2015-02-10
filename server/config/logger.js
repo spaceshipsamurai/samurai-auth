@@ -1,28 +1,45 @@
 var loggly = require('loggly'),
-    config = require('../config/config');
+    config = require('./config').getConfig();
 
-var client = undefined;
+module.exports = function() {
+    var client = loggly.createClient(config.loggly);
 
-if(config.getEnvironment() === 'production') {
-    client = loggly.createClient(config.getConfig().loggly);
-}
+    var info = function(msg, tags) {
+        log('info', msg, tags);
+    };
 
-exports.log = function(level, msg, tags) {
+    var warning = function(msg, tags) {
+        log('warning', msg, tags);
+    };
 
-    if(client) {
-        client.log({
-            level: level,
-            message: msg,
-            tags: tags
-        });
+    var error = function(msg, tags) {
+        log('error', msg, tags);
+    };
+
+    var critical = function(msg, tags) {
+        log('critical', msg, tags);
+    };
+
+    var log = function(level, msg, tags) {
+        if(!tags || !(tags instanceof Array)) tags = [];
+
+        tags.push(level);
+
+        if(config.loggly.local)
+        {
+            console.log(tags);
+            console.log(msg);
+        }
+        else {
+            client.log(msg, tags);
+        }
+    };
+
+    return {
+        info: info,
+        warning: warning,
+        error: error,
+        critical: critical
     }
-    else {
-        console.log(level.toUpperCase() + ': ' + msg);
-    }
-};
 
-exports.level = {
-    info: "info",
-    warn: "warning",
-    critical: "critical"
-};
+}();

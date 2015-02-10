@@ -1,7 +1,9 @@
 var mongoose = require('mongoose'),
     KeyManager = require('../../services/eve/key-service'),
+    CharacterService = require('../../services/eve/character-service')(),
     User = mongoose.model('User'),
-    Character = mongoose.model('Character');
+    Character = mongoose.model('Character'),
+    async = require('async');
 
 module.exports = function() {
 
@@ -51,10 +53,33 @@ module.exports = function() {
 
     };
 
+    var getAffiliated = function(req, res, next) {
+
+        CharacterService.find({ user: req.user._id }).then(function(characters){
+
+            async.filter(characters, function(character, cb){
+
+                CharacterService.getAffiliation(character._id).then(function(aff){
+                    cb(aff === 'Alliance' || aff === 'Coalition');
+                }).catch(function(err) {
+                    return next(err);
+                });
+
+            }, function(results){
+                return res.json(results);
+            });
+
+        }, function(err) {
+            return next(err);
+        });
+
+    };
+
     return {
         listByUser: listByUser,
         updatePrimaryCharacter: updatePrimaryCharacter,
-        listPrimaries: listPrimaries
+        listPrimaries: listPrimaries,
+        getAffiliated: getAffiliated
     }
 
 };

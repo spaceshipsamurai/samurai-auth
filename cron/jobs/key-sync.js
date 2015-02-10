@@ -7,22 +7,27 @@
  */
 
 var Promise = require('bluebird'),
-    Key = require('mongoose').model('Key'),
     async = require('async'),
-    acountService = require('../../server/services/account/account-service')();
+    accountService = require('../../server/services/account/account-service')(),
+    keyService = require('../../server/services/eve/key-service')();
+
 
 exports.run = function(){
 
     var process = function(key, cb) {
 
-        key.sync().then(function(){
+        var user = key.userId;
 
-            acountService.sync(key.userId).then(function(){
-                return cb();
-            }).catch(function(err){
-                return cb(err);
-            });
+        keyService.fetch(key.keyId, key.vCode).then(function(rawKey){
+            return keyService.save(rawKey);
+        }).then(function(saved){
 
+            if(saved.status === 'Invalid')
+            {
+                accountService.deactivate(user._id);
+            }
+
+            return cb()
         }).catch(function(err){
             return cb(err);
         });
@@ -34,6 +39,7 @@ exports.run = function(){
         Key.find({ status: 'Valid' })
             .sort({ lastCheck: 1 })
             .limit(20)
+            .populate('userId')
             .exec(function(err, keys){
 
                 async.map(keys, process, function(err, results){

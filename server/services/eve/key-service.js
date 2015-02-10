@@ -2,139 +2,255 @@ var neow = require('neow'),
     mongoose = require('mongoose'),
     Key = mongoose.model('Key'),
     Character = mongoose.model('Character'),
-    Promise = require('bluebird');
+    Promise = require('bluebird'),
+    async = require('async'),
+    accountService = require('../account/account-service')();
 
-module.exports = function(){
+module.exports = function () {
 
-    var use = function(api) {
-        neow = api;
+    var find = function (options, fields) {
+
+        var query = Key.find(options).populate('characters');
+
+        if (fields)
+            query = query.select(fields);
+
+        return query.exec();
+
     };
 
-    var create = function(params) {
-        return new Promise(function(resolve, reject){
+    var findOne = function (options, fields) {
 
-            if(!params.id || !params.vCode) reject('Key ID and Verification Code are required.');
+        var query = Key.findOne(options).populate('characters');
 
-            var eClient = new neow.EveClient({
-                keyID: params.id,
-                vCode: params.vCode
-            });
+        if (fields)
+            query = query.select(fields);
 
-            eClient.fetch('account:APIKeyInfo').then(function(result){
+        return query.exec();
 
-                var keyData = result.key;
-                var access = keyData.accessMask | 1; //account balance
-                access = access | 4096; //market orders
-                access = access | 4194304; //Wallet Transactions
+    };
 
-                if(access != 268435455) return reject('Invalid access mask');
-                if(!keyData.type || keyData.type != 'Account') return reject('Invalid key type');
+    var fetchKey = function (keyId, vCode) {
 
-                var newKey = new Key({
-                    keyId: params.id,
-                    vCode: params.vCode,
-                    userId: params.userId,
-                    accessMask: keyData.accessMask,
-                    keyType: keyData.type,
-                    expires: keyData.expires,
-                    status: 'Valid',
-                    characters: [],
-                    lastCheck: new Date()
-                });
+        var client = new neow.EveClient({
+            keyID: keyId,
+            vCode: vCode
+        });
 
-                newKey.save(function(err, key){
-                    if(err) return reject(err);
+        return new Promise(function (resolve, reject) {
 
-                    for(var cid in keyData.characters)
+            client.fetch('account:APIKeyInfo')
+                .then(function (result) {
+
+                    var data = result.key;
+                    var key = {
+                        keyId: keyId,
+                        vCode: vCode
+                    };
+
+                    key.accessMask = data.accessMask;
+                    key.keyType = data.type;
+                    key.expires = data.expires;
+                    key.lastCheck = new Date();
+
+                    var chars = [];
+
+                    for (var id in data.characters)
                     {
-                        var character = result.key.characters[cid];
-                        var characterModel = new Character({
-                            _id: mongoose.Types.ObjectId(),
-                            name: character.characterName,
-                            user: params.userId,
-                            key: key._id,
+                        var c = data.characters[id];
+                        var char = {
+                            id: c.characterID,
+                            name: c.characterName,
                             corporation: {
-                                id: character.corporationID,
-                                name: character.corporationName
-                            },
-                            alliance: {
-                                id: character.allianceID,
-                                name: character.allianceName
-                            },
-                            id: character.characterID
-                        });
+                                id: c.corporationID,
+                                name: c.corporationName
+                            }
+                        };
 
-                        characterModel.save();
-                        key.characters.push(characterModel._id);
+                        if(c.allianceID !== 0)
+                        {
+                            char.alliance = {
+                                id: c.allianceID,
+                                name: c.allianceName
+                            }
+                        }
+
+                        chars.push(char);
                     }
 
-                    key.save(function(){
-                        if(err) reject(err);
-                        resolve(key);
+
+                    key.characters = chars;
+
+                    return resolve(key);
+
+                }).catch(function (error) {
+                    return reject(error);
+                });
+
+        });
+
+    };
+
+    var validate = function (key) {
+        var keyModel = new Key(key);
+        return keyModel.verify();
+    };
+
+
+    var save = function(keyData) {
+
+        var oldStatus;
+
+        return new Promise(function(resolve, reject){
+
+            async.seq(function(data, cb){
+
+                if(keyData._id)
+                {
+                    Key.findOne({ _id: keyData._id })
+                        .populate('characters')
+                        .exec(function(err, existing){
+
+                            if(err) return cb(err, null);
+
+                            existing.keyId = keyData.keyId;
+                            existing.vCode = keyData.vCode;
+
+                            return cb(null, existing);
+
+                    });
+                }
+                else {
+                    return cb(null, new Key({
+                                keyId: keyData.keyId,
+                                vCode: keyData.vCode,
+                                userId: keyData.userId
+                            }));
+                }
+
+            }, function(existing, cb){
+
+                if(!existing) return cb();
+
+                oldStatus = existing.status;
+
+                existing.accessMask = keyData.accessMask;
+                existing.status = 'Valid';
+                existing.validationErrors = [];
+                existing.keyType = keyData.keyType;
+                existing.expires = keyData.expires;
+
+                existing.save(function(err, saved){
+                    if(err) return reject(err);
+
+                    if(!saved.characters) saved.characters = [];
+
+                    var existingCharacters = arrayToHash(saved.characters, 'id');
+                    var newCharacters = arrayToHash(keyData.characters, 'id');
+                    var promises = [];
+
+                    for(var x = 0; x < saved.characters.length; x++)
+                    {
+                        var eChar = saved.characters[x];
+                        var nChar = newCharacters[eChar.id];
+
+                        if(nChar)
+                        {
+                            eChar.corporation.id = nChar.corporation.id;
+                            eChar.corporation.name = nChar.corporation.name;
+
+                            if(nChar.alliance)
+                            {
+                                eChar.alliance = {
+                                    id: nChar.alliance.id,
+                                    name: nChar.alliance.name
+                                }
+                            }
+
+                            promises.push(eChar.save());
+                        }
+                        else {
+                            saved.characters.splice(x, 1);
+                            promises.push(Character.findByIdAndRemove(eChar._id).exec());
+                        }
+
+                    }
+
+                    for(var x = 0; x < keyData.characters.length; x++)
+                    {
+                        var nChar = keyData.characters[x];
+                        var eChar = existingCharacters[nChar.id];
+
+                        if(!eChar)
+                        {
+                            eChar = {
+                                id: nChar.id,
+                                name: nChar.name,
+                                corporation: {
+                                    id: nChar.corporation.id,
+                                    name: nChar.corporation.name
+                                },
+                                user: keyData.userId,
+                                key: saved._id
+                            };
+
+                            if(nChar.alliance)
+                            {
+                                eChar.alliance = {
+                                    id: nChar.alliance.id,
+                                    name: nChar.alliance.name
+                                }
+                            }
+
+                            var newCharacter = new Character(eChar);
+                            promises.push(newCharacter.save());
+                            saved.characters.push(newCharacter._id);
+                        }
+
+                    }
+
+                    Promise.all(promises).then(function(){
+                        saved.save(function(err, saved2){
+                            if(err) return cb(err);
+                            return cb(null, saved2);
+                        });
                     });
 
                 });
+
+            })(null, function(err, savedKey){
+
+                if(err) return reject(err);
+
+                if(oldStatus === 'Invalid' && savedKey.status === 'Valid')
+                {
+                    accountService.activate(savedKey.userId);
+                }
+
+                return resolve(savedKey);
             });
 
         });
     };
 
-    var getCharacters = function(options) {
+    var arrayToHash = function(arr, key) {
 
-        return new Promise(function(resolve, reject){
+        var hash = {};
 
-            if(!options.userId) return reject('Missing required parameter userId');
-            if(options.validOnly === undefined) options.validOnly = true;
+        for(var x = 0; x < arr.length; x++)
+            hash[arr[x][key]] = arr[x];
 
-            var search = { userId: options.userId };
-            if(options.validOnly) search.status = 'Valid';
-
-            Key.find(search)
-                .populate('characters')
-                .exec(function(err, keys){
-
-                    if(err) return reject(err);
-
-                    var characters = [];
-
-                    for(var x = 0; x < keys.length; x ++)
-                    {
-                        for(var c = 0; c < keys[x].characters.length; c++)
-                        {
-                            characters.push(keys[x].characters[c]);
-                        }
-                    }
-
-                    resolve(characters);
-
-                });
-        });
-
+        return hash;
     };
 
-    var getByUserId = function(userId) {
+    var remove = function (keyId) {
+        return new Promise(function (resolve, reject) {
+            Key.findOne({keyId: keyId}, function (err, key) {
+                if (err) return reject(err);
+                if (!key) return resolve();
 
-        return new Promise(function(resolve, reject){
-
-            Key.find({userId: userId})
-                .populate('characters')
-                .exec(function(err, keys){
-                    if(err) return reject(err);
-                    resolve(keys);
-                });
-
-        });
-
-    };
-
-    var remove = function(keyId) {
-        return new Promise(function(resolve, reject){
-            Key.findOne({ keyId: keyId }, function(err, key) {
-                if(err) return reject(err);
-                if(!key) return resolve();
-
-                key.remove(function(err){
-                    if(err) reject(err);
+                key.remove(function (err) {
+                    if (err) reject(err);
                     else resolve();
                 });
             });
@@ -142,12 +258,13 @@ module.exports = function(){
     };
 
     return {
-        create: create,
-        getCharacters: getCharacters,
-        use: use,
-        getByUserId: getByUserId,
-        remove: remove
+        find: find,
+        findOne: findOne,
+        fetch: fetchKey,
+        validate: validate,
+        remove: remove,
+        save: save
     }
 
-}();
+};
 

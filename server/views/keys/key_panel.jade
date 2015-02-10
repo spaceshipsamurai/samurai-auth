@@ -1,0 +1,38 @@
+.panel.panel-primary(ng-if="key")
+    .panel-heading
+        .pull-right
+            a(href="javascript: void(0);", ng-click="key.editing = true")
+                i.fa.fa-edit.text-warning.fa-2x
+            a(href="javascript: void(0);", ng-click="deleteKey(key.keyId)").m-l-10
+                i.fa.fa-trash.text-danger.fa-2x
+        h4.panel-title {{ key.keyId }}
+    .panel-body
+        .row(ng-show="errors")
+            .alert-danger.col-md-12
+                p Please fix the following:
+                ul
+                    li(ng-repeat="error in errors") {{ error }}
+        .row
+            .col-md-9.col-sm-9
+                table.table
+                    tr
+                        th Access Mask
+                        td {{ key.accessMask }}
+                    tr
+                        th Status
+                        td {{ key.status }}
+                    tr(ng-show="key.editing")
+                        th Key ID:
+                        td
+                            input.form-control(type="text", ng-model="key.keyId")
+                    tr
+                        th Verification Code:
+                        td(ng-hide="key.editing") {{ key.vCode }}
+                        td(ng-show="key.editing")
+                            input.form-control(type="text", ng-model="key.vCode")
+            .col-md-3.col-sm-3
+                .pull-right
+                    img.img-rounded.m-r-10(ng-repeat="character in key.characters", ng-src='http://image.eveonline.com/Character/{{ character.id }}_32.jpg', alt='{{ character.name }}', title='{{ character.name }}')
+        .row
+            button.btn.btn-primary.pull-right(ng-click="save(key)", ng-show="key.editing") Save
+            button.btn.btn-danger.pull-right.m-r-10(ng-click="key.editing = false; errors = undefined", ng-show="key.editing") Cancel

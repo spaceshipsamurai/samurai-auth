@@ -1,0 +1,23 @@
+.panel.panel-primary(ng-if="newKey")
+    .panel-heading
+        h4.panel-title New Key
+    .panel-body
+        .row(ng-show="errors")
+            .alert-danger.col-md-12
+                p Please fix the following:
+                ul
+                    li(ng-repeat="error in errors") {{ error }}
+        .row
+            .col-md-9.col-sm-9
+                table.table
+                    tr
+                        th Key ID:
+                        td
+                            input.form-control(type="text", ng-model="newKey.keyId")
+                    tr
+                        th Verification Code:
+                        td
+                            input.form-control(type="text", ng-model="newKey.vCode")
+        .row
+            button.btn.btn-primary.pull-right(ng-click="save(newKey)") Save
+            button.btn.btn-danger.pull-right.m-r-10(ng-click="cancel()") Cancel

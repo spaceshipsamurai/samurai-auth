@@ -7,10 +7,6 @@ angular.module('ssAuth').config(['$locationProvider', '$stateProvider', '$httpPr
         url: '/',
         templateUrl: '/templates/dashboard/index',
         controller: 'HomeCtrl'
-    }).state('keys', {
-        url: '/keys',
-        templateUrl: '/templates/keys/list',
-        controller: 'KeyCtrl'
     }).state('services', {
         url: '/services',
         templateUrl: '/templates/services/list',
