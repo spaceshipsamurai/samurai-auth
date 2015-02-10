@@ -1,68 +1,65 @@
 var Promise = require('bluebird'),
     neow = require('neow'),
-    Alliance = require('mongoose').model('Alliance');
+    Alliance = require('mongoose').model('Alliance'),
+    async = require('async');
 
-var getCorpList = function(data) {
+var getCorpList = function (data) {
 
     var corporations = [];
 
-    for(var corp in data)
+    for (var corp in data)
         corporations.push(Number(corp));
 
     return corporations;
 };
 
-exports.run = function(){
+exports.run = function () {
 
-    return new Promise(function(resolve, reject){
+    return new Promise(function (resolve, reject) {
 
         var client = new neow.EveClient({});
 
-        client.fetch('eve:AllianceList').then(function(result){
+        client.fetch('eve:AllianceList').then(function (result) {
 
             Alliance.find({})
                 .sort('id')
-                .exec(function(err, alliances){
+                .exec(function (err, alliances) {
 
-                    if(err) return reject(err);
-                    var promises = [];
+                    if (err) return reject(err);
 
-                    for(var x = 0; x < alliances.length; x++)
-                    {
-                        promises.push(new Promise(function(resolveInner, rejectInner){
+                    async.map(alliances, function (alliance, cb) {
 
-                            var alliance = result.alliances[alliances[x].id];
+                        var fetched = result.alliances[alliance.id];
 
-                            if(alliance)
-                            {
-                                alliance.processed = true;
-                                alliances[x].corporations = getCorpList(alliance.memberCorporations);
-                                alliances[x].memberCount = Number(alliance.memberCount);
-                                alliances[x].executor = Number(alliance.executorCorpID);
-                                alliances[x].save(function(err){
-                                    if(err) return rejectInner(err);
-                                    return resolveInner();
-                                })
-                            }
-                            else
-                            {
-                                alliances[x].remove(function(err){
-                                    if(err) return rejectInner(err);
-                                    else return resolveInner();
-                                });
-                            }
+                        if (alliance) {
+                            alliance.processed = true;
+                            alliance.corporations = getCorpList(fetched.memberCorporations);
+                            alliance.memberCount = Number(fetched.memberCount);
+                            alliance.executor = Number(fetched.executorCorpID);
+                            alliance.save(function (err, saved) {
+                                if (err) return cb(err);
+                                return cb(null, saved.id);
+                            })
+                        }
+                        else {
+                            alliance.remove(function (err) {
+                                if (err) return cb(err);
+                                else return cb(null, null);
+                            });
+                        }
 
-                        }));
+                    }, function (err, existing) {
 
-                    }
+                        if (err) return reject(err);
 
-                    for(var aid in result.alliances)
-                    {
-                        if(!result.alliances.processed)
-                        {
-                            var alliance = result.alliances[aid];
+                        var fetched = [];
 
-                            promises.push(new Promise(function(resolveInner, rejectInner){
+                        for (var aid in result.alliances)
+                            fetched.push(result.alliances[aid]);
+
+                        async.map(fetched, function (alliance, cb) {
+
+                            if (existing.indexOf(alliance.id) === -1) {
                                 Alliance.create({
                                     corporations: getCorpList(alliance.memberCorporations),
                                     started: new Date(alliance.startDate),
@@ -71,29 +68,24 @@ exports.run = function(){
                                     id: Number(alliance.allianceID),
                                     ticker: alliance.shortName,
                                     name: alliance.name
-                                }, function(err){
-                                    if(err) return rejectInner(err);
-                                    return resolveInner();
+                                }, function (err, created) {
+                                    if (err) return cb(err, null);
+                                    return cb(null, created);
                                 })
-                            }));
+                            }
+                            else {
+                                return cb(null, null);
+                            }
 
-                        }
-                    }
+                        }, function (err) {
+                            if (err) return reject(err);
+                            return resolve();
+                        });
 
-                    Promise.all(promises).then(function(){
-                        return resolve();
-                    }).catch(function(err){
-                        return reject(err);
-                    })
-
-
+                    });
                 });
-
-            resolve('Success');
-        }).catch(function(err){
+        }).catch(function (err) {
             reject(err);
         });
-
     });
-
 };
