@@ -1,4 +1,4 @@
-angular.module('ssAuth').factory('KeyService', ['$http', '$q', function($http, $q){
+angular.module('ssAuth').factory('KeyService', ['$http', '$q', 'SessionService', function($http, $q, SessionService){
 
     var getKeys = function() {
 
@@ -25,6 +25,21 @@ angular.module('ssAuth').factory('KeyService', ['$http', '$q', function($http, $
         return deferred.promise;
     };
 
+    var updateKey = function(key) {
+
+        var deferred = $q.defer();
+
+        $http.put('/api/keys/' + key._id, { keyID: key.keyId, vCode: key.vCode }).success(function(data){
+            SessionService.getCurrentUser(true);
+            deferred.resolve(data);
+        }).error(function(response, status){
+            if(status === 400)
+                deferred.reject(response);
+        });
+
+        return deferred.promise;
+    };
+
     var removeKey = function(keyId) {
 
         var deferred = $q.defer();
@@ -40,6 +55,7 @@ angular.module('ssAuth').factory('KeyService', ['$http', '$q', function($http, $
     return {
         getKeys: getKeys,
         save: saveKey,
-        remove: removeKey
+        remove: removeKey,
+        updateKey: updateKey
     };
 }]);

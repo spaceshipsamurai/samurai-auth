@@ -4,7 +4,7 @@ angular.module('ssAuth').factory('CharacterService', ['$http', '$q', function($h
 
         var deferred = $q.defer();
 
-        $http.get('/api/characters').success(function(data) {
+        $http.get('/api/characters/affiliated').success(function(data) {
             deferred.resolve(data);
         });
 

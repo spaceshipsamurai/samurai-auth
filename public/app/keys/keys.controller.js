@@ -51,11 +51,10 @@
     var keyPanel = function($scope, $http, KeyService) {
 
         $scope.save = function(key){
-            $http.put('/api/keys/' + key._id, { keyID: key.keyId, vCode: key.vCode }).success(function(data){
-                $scope.key = data;
-            }).error(function(response, status){
-                if(status === 400)
-                    $scope.errors = response;
+            KeyService.updateKey(key).then(function(updated){
+                $scope.key = updated;
+            }, function(errors){
+                $scope.errors = errors;
             });
         };
 

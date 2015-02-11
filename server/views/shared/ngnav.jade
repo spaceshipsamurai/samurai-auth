@@ -2,11 +2,11 @@ navigation
     li.nav-profile(ng-click="toggleSelect()").p-l-10
         .image
             a(href="javascript: void(0);")
-                img(ng-src="{{ getUserImage() }}" alt)
+                img(ng-src="{{ user.image }}" alt)
         div.info
             div.pull-left
-                | {{ getUserName() }}
-                small {{ getUserAlt() }}
+                | {{ user.name }}
+                small {{ user.altText }}
             div.pull-right
                 i.pull-right.fa.fa-angle-right.fa-3x
         div.characters.ng-cloak.bg-black-lighter(ng-show="selecting")

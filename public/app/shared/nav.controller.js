@@ -2,9 +2,31 @@ angular.module('app.navigation', [ 'ui.router' ]).controller('NavCtrl', ['$scope
 
     var currentState = '', user;
 
-    SessionService.getCurrentUser().then(function(currentUser){
-        user = currentUser;
+    $scope.$watch(SessionService.userUpdated, function(){
+        SessionService.getCurrentUser().then(function(current){
+
+            user = current;
+            console.log('nav:user:change');
+
+            if(!user.primary)
+            {
+                $scope.user = {
+                    image: '/images/samurai-vader.jpg',
+                    name: 'New User',
+                    altText: 'Select a primary'
+                }
+            } else {
+                $scope.user = {
+                    name: current.primary.name,
+                    image: 'http://image.eveonline.com/Character/' + user.primary.id +'_32.jpg',
+                    altText: current.primary.alliance.name
+                }
+            }
+
+        })
     });
+
+    SessionService.getCurrentUser(true);
 
     $scope.setPrimary = function(character) {
         $http.put('/api/characters/primary/' + character._id, {}).success(function(){
@@ -32,25 +54,6 @@ angular.module('app.navigation', [ 'ui.router' ]).controller('NavCtrl', ['$scope
             if(user.groups && user.groups[authorized[x]] !== undefined) return true;
 
         return false;
-    };
-
-    $scope.getUserImage = function() {
-
-        if(!user || !user.primary) return '/images/samurai-vader.jpg';
-
-        return 'http://image.eveonline.com/Character/' + user.primary.id +'_32.jpg';
-
-    };
-
-    $scope.getUserName = function() {
-        if(!user || !user.primary) return 'New User';
-
-        return user.primary.name;
-    };
-
-    $scope.getUserAlt = function() {
-        if(!user || !user.primary) return 'Select a character';
-        return user.primary.alliance.name;
     };
 
     $scope.toggleSelect = function() {

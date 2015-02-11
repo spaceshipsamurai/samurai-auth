@@ -8,17 +8,23 @@
                 var groups = scope.$eval(attrs.authorize);
                 var hasGroup = false;
 
-                SessionService.getCurrentUser().then(function(user){
+                scope.$watch(SessionService.userUpdated, function(){
 
-                    for(var x = 0; x < groups.length; x++) {
-                        if(user.groups && user.groups[groups[x]]) hasGroup = true;
-                    }
+                    SessionService.getCurrentUser().then(function(user){
 
-                    if(!hasGroup) {
-                        angular.element(element).toggle(false);
-                    }
+                        for(var x = 0; x < groups.length; x++) {
+                            if(user.groups && user.groups[groups[x]]) hasGroup = true;
+                        }
+
+                        if(!hasGroup) {
+                            angular.element(element).toggle(false);
+                        }
+
+                    });
 
                 });
+
+
             }
         };
     }]);

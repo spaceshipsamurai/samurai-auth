@@ -4,8 +4,7 @@ angular.module('ssAuth').factory('SessionService', ['$http', '$cookies', '$q', f
     var currentFetch;
 
     currentUser.isAdmin = function() {
-        if(!currentUser || !currentUser.groups || !currentUser.groups['Admins']) return false;
-        return true;
+        return currentUser && currentUser.groups && currentUser.groups['Admins'];
     };
 
     var getCurrentUser = function(forceUpdate) {
@@ -77,7 +76,8 @@ angular.module('ssAuth').factory('SessionService', ['$http', '$cookies', '$q', f
 
     return {
         getCurrentUser: getCurrentUser,
-        restore: restoreFromCookie
+        restore: restoreFromCookie,
+        userUpdated: currentUser.lastUpdated
     };
 
 }]);

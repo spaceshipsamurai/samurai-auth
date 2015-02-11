@@ -7,14 +7,6 @@ var mongoose = require('mongoose'),
 
 module.exports = function() {
 
-    var listByUser = function(req, res) {
-        KeyManager.getCharacters({ userId: req.user._id }).then(function(characters){
-            return res.json(characters);
-        }).catch(function(err){
-            return res.status(400).json({ message: err });
-        });
-    };
-
     var listPrimaries = function(req, res, next) {
 
         User.find({}, 'primary')
@@ -76,7 +68,6 @@ module.exports = function() {
     };
 
     return {
-        listByUser: listByUser,
         updatePrimaryCharacter: updatePrimaryCharacter,
         listPrimaries: listPrimaries,
         getAffiliated: getAffiliated

@@ -9,27 +9,42 @@
 var Promise = require('bluebird'),
     async = require('async'),
     accountService = require('../../server/services/account/account-service')(),
-    keyService = require('../../server/services/eve/key-service')();
+    keyService = require('../../server/services/eve/key-service')(),
+    Key = require('mongoose').model('Key');
 
 
 exports.run = function(){
 
     var process = function(key, cb) {
 
-        var user = key.userId;
 
         keyService.fetch(key.keyId, key.vCode).then(function(rawKey){
-            return keyService.save(rawKey);
-        }).then(function(saved){
 
-            if(saved.status === 'Invalid')
-            {
-                accountService.deactivate(user._id);
-            }
+            rawKey._id = key.userId;
+            rawKey.userId = key.userId;
 
-            return cb()
+            keyService.save(rawKey).then(function(saved){
+
+                if(saved.status === 'Invalid')
+                {
+                    accountService.deactivate(key.userId);
+                }
+
+                return cb(null, saved)
+
+            }).catch(function(err){
+                cb(err);
+            });
         }).catch(function(err){
-            return cb(err);
+
+            key.status = 'Invalid';
+            key.validationErros = [err];
+            key.save(function(err){
+
+                if(err) return cb(err);
+                return cb();
+
+            });
         });
 
     };
@@ -39,12 +54,17 @@ exports.run = function(){
         Key.find({ status: 'Valid' })
             .sort({ lastCheck: 1 })
             .limit(20)
-            .populate('userId')
             .exec(function(err, keys){
 
                 async.map(keys, process, function(err, results){
-                    if(err) return reject(err);
-                    else return resolve(results);
+                    if(err) return reject({
+                        message: err.message,
+                        stack: err.stack,
+                        type: err.type,
+                        raw: err.toString()
+                    });
+
+                    else return resolve();
                 });
 
             });
