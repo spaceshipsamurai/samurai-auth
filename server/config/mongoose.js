@@ -1,6 +1,12 @@
 var mongoose = require('mongoose'),
     logger = require('./logger');
 
+//adds the toObjectId method for converting a string to an objectId
+String.prototype.toObjectId = function() {
+    var ObjectId = (mongoose.Types.ObjectId);
+    return new ObjectId(this.toString());
+};
+
 
 module.exports = function(config) {
 
@@ -14,7 +20,7 @@ module.exports = function(config) {
     });
 
     db.once('open', function() {
-        console.log('Mono DB connection open...');
+        console.log('Mongo DB connection open...');
     });
 
 };

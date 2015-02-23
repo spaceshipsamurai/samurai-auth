@@ -257,13 +257,113 @@ module.exports = function () {
         });
     };
 
+    var setInvalid = function(id, reasons)
+    {
+        return new Promise(function(resolve, reject){
+
+            Key.findOne({ _id: id }, function(err, key){
+
+                key.status = 'Invalid';
+                key.validationErrors = reasons;
+
+                key.save(function(err, saved){
+                    if(err) return reject(err);
+                    return resolve(saved);
+                })
+
+            })
+
+        });
+    };
+
+    var sync = function(key) {
+
+        return new Promise(function(resolve, reject){
+
+            fetchKey(key.keyId, key.vCode)
+                .then(function (fetched) {
+
+                    fetched.userId = key.userId;
+                    fetched._id = key._id;
+
+                    save(fetched).then(function (saved) {
+                        resolve({
+                            _id: saved._id,
+                            characters: saved.characters,
+                            user: saved.userId,
+                            status: saved.status,
+                            validationErrors: saved.validationErrors
+                        });
+                    }).catch(function (err) {
+                        reject(err);
+                    });
+
+                }, function(err) {
+
+                    setInvalid(key._id, [ err.message ]).then(function(saved){
+
+                        resolve({
+                            _id: saved._id,
+                            characters: saved.characters,
+                            user: saved.userId,
+                            status: saved.status,
+                            validationErrors: saved.validationErrors
+                        });
+
+                    });
+
+
+                });
+
+        });
+
+    };
+
+    var syncById = function(id) {
+
+        return new Promise(function(resolve){
+
+            Key.findOne({ _id: id }, function(key){
+
+                sync(key).then(function(synced){
+                    resolve(synced);
+                })
+
+            });
+
+        })
+
+    };
+
+    var syncBatch = function(count) {
+        return new Promise(function(resolve, reject){
+            Key.find({ status: 'Valid' })
+                .sort({ updated: 1 })
+                .limit(count)
+                .exec(function(err, keys){
+                    if(err) return reject(err);
+
+                    async.map(keys, function(key, cb){
+                        sync(key).then(function(key){
+                            cb(null, key);
+                        })
+                    }, function(err, synced){
+                        return resolve(synced);
+                    });
+                });
+        })
+    };
+
     return {
         find: find,
         findOne: findOne,
         fetch: fetchKey,
         validate: validate,
         remove: remove,
-        save: save
+        save: save,
+        setInvalid: setInvalid,
+        sync: syncById,
+        syncBatch: syncBatch
     }
 
 };

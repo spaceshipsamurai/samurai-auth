@@ -20,7 +20,8 @@
     "request": "~2.51.0",
     "xml2js": "~0.4.4",
     "moment": "~2.9.0",
-    "async": "~0.9.0"
+    "async": "~0.9.0",
+    "amqp": "~0.2.3"
   },
   "devDependencies": {
     "morgan": "~1.1.1",

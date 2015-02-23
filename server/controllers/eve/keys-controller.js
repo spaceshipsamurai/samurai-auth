@@ -1,6 +1,7 @@
 var KeyManager = require('../../services/eve/key-service')(),
     CharacterService = require('../../services/eve/character-service')(),
-    User = require('mongoose').model('User');
+    User = require('mongoose').model('User'),
+    async = require('async');
 
 module.exports = function () {
 
@@ -71,7 +72,32 @@ module.exports = function () {
                 else {
                     return res.status(400).json(errors);
                 }
+            }, function(err) {
+
+                if(err.message && err.message.indexOf('403') > -1)
+                {
+                    return res.status(400).json({ errors: ['Key is expired'] });
+                }
+
+                return res.status(400).json({ errors: [ err.message ] });
+
             });
+    };
+
+    var sync = function(req, res, next) {
+
+        if(req.body._id)
+        {
+            KeyManager.sync(req.body._id).then(function(key){
+                return res.json(key);
+            })
+        }
+        else {
+            KeyManager.syncBatch(req.body.count || 10).then(function(keys){
+                return res.json(keys);
+            })
+        }
+
     };
 
     var remove = function (req, res) {
@@ -90,6 +116,7 @@ module.exports = function () {
         list: list,
         create: create,
         remove: remove,
-        update: update
+        update: update,
+        sync: sync
     }
 }();
