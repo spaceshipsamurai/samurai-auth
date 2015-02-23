@@ -11,16 +11,21 @@
 
         SessionService.getCurrentUser().then(function(currentUser){
             user = currentUser;
+
+            console.log('Group: ' + group.name);
+            console.log('Owner:' + group.owner._id);
+            console.log('User: ' + user._id);
+
         });
 
         var isManager = function() {
-            if(!user) return false;
+            if(!user || !group.managers) return false;
             return group.managers.indexOf(user._id) > -1;
         };
 
         var isOwner = function() {
             if(!user || !user.groups) return false;
-            return group.owner === user._id;
+            return group.owner._id === user._id;
         };
 
         $scope.isGroupAdmin = function(){

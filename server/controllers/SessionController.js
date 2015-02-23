@@ -44,6 +44,7 @@ exports.getCurrentUser = function(req, res, next) {
         user.character = req.user.character;
         user.services = req.user.services;
         user.primary = req.user.primary;
+        user._id = req.user._id;
     }
     else
     {
