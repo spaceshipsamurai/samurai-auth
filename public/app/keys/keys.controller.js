@@ -13,15 +13,14 @@
 
         $scope.save = function(newKey) {
 
-            console.log(newKey);
-
             KeyService.save(newKey).then(function(){
                 updateKeys();
                 $scope.newKey = undefined;
                 $scope.error = undefined;
-            }).catch(function(err){
-                $scope.error = err;
+            }, function(data){
+                $scope.errors = data.errors;
             });
+
         };
 
         $scope.deleteKey = function(id) {

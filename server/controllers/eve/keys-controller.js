@@ -16,7 +16,7 @@ module.exports = function () {
     var create = function (req, res) {
 
         if (!req.body.keyId || !req.body.vCode)
-            return res.status(400).json({message: "Missing key id or verification code"});
+            return res.status(400).json( { errors: ['Missing key id or verification code'] });
 
         KeyManager.fetch(req.body.keyId, req.body.vCode)
             .then(function (key) {
@@ -29,12 +29,10 @@ module.exports = function () {
 
                     KeyManager.save(key).then(function (saved) {
                         return res.json(saved.toObject());
-                    }).catch(function (err) {
-                        return res.status(400).json({message: err});
                     });
                 }
                 else {
-                    return res.status(400).json(errors);
+                    return res.status(400).json({ errors: errors });
                 }
             });
 
