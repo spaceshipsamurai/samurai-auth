@@ -11,11 +11,6 @@
 
         SessionService.getCurrentUser().then(function(currentUser){
             user = currentUser;
-
-            console.log('Group: ' + group.name);
-            console.log('Owner:' + group.owner._id);
-            console.log('User: ' + user._id);
-
         });
 
         var isManager = function() {

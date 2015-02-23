@@ -34,6 +34,15 @@ module.exports = function () {
                 else {
                     return res.status(400).json({ errors: errors });
                 }
+            }, function(err) {
+
+                if(err.message && err.message.indexOf('403') > -1)
+                {
+                    return res.status(400).json({ errors: ['Key is expired'] });
+                }
+
+                return res.status(400).json({ errors: [ err.message ] });
+
             });
 
     };
