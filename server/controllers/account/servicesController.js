@@ -1,26 +1,7 @@
 var jabber = require('../../services/jabber-service'),
+    TeamspeakService = require('../../services/applications/teamspeak/teamspeak-service')(),
     Character = require('mongoose').model('Character');
 
-exports.setForumUser = function(req, res, next) {
-
-    var user = req.user;
-
-    if(!user.services) user.services = { forum: {} };
-    if(!user.services.forum) user.services.forum = {};
-
-    var name = req.body.cname;
-    var id = Number(req.body.cid);
-
-    user.services.forum.name = name;
-    user.services.forum.characterId = id;
-
-    user.save(function(err) {
-        if(err){
-            next({ msg: err, tags: ['auth', 'group-admin']});
-        }
-        res.json({ message: 'Success' })
-    });
-};
 
 exports.setJabberUser = function(req, res, next) {
 
@@ -61,5 +42,18 @@ exports.resetJabberPassword = function(req, res, next) {
         jabber.updateGroups(req.user);
     });
     res.send(200);
+
+};
+
+exports.setTeamspeakUid = function(req, res, next) {
+
+    if(!req.body.uid) return res.status(400).json({ message: 'Missing UID' });
+
+    TeamspeakService.setId(req.user._id, req.body.uid).then(function(user){
+        return res.status(200).json({ info: user.services.teamspeak });
+    }, function(err){
+        console.log(err);
+        return res.status(400).json({ message: 'Invalid UID' });
+    });
 
 };

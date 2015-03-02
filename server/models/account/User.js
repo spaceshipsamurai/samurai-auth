@@ -23,6 +23,10 @@ var userSchema = mongoose.Schema({
         jabber: {
             username: String,
             character: { type: mongoose.Schema.ObjectId, ref: 'Character' }
+        },
+        teamspeak: {
+            uid: String,
+            dbId: Number
         }
     },
     primary: { type: mongoose.Schema.ObjectId , ref: 'Character' }

@@ -31,3 +31,36 @@ div.row
                         .col-md-2(ng-repeat="character in characters")
                             img.img-rounded(ng-src="//image.eveonline.com/Character/{{ character.id }}_64.jpg", alt="{{ character.name }}", title="{{ character.name }}", style="margin-right: 10px")
                             button.btn.btn-primary.m-t-10(ng-click="setJabberUser(character)") Select
+div.row
+    div.col-md-12.col-lg-7
+        div.panel.panel-primary
+            div.panel-heading
+                h3.panel-title Teamspeak Account (Alpha)
+            div.panel-body(ng-if="services.teamspeak")
+                div.row
+                    div.col-md-10
+                        form.form-horizontal
+                            .form-group
+                                label.col-md-3.control-label.ui-sortable Server
+                                .col-md-7.p-t-5
+                                    span ts.spaceshipsamurai.com
+                            .form-group
+                                label.col-md-3.control-label.ui-sortable Password
+                                .col-md-7.p-t-5
+                                    span secisbad@sov
+                            .form-group
+                                label.col-md-3.control-label.ui-sortable Unique ID
+                                .col-md-7.ui-sortable
+                                    input(type="text", ng-model="uid").form-control
+                                .col-md-2.ui-sortable
+                                    button.btn.btn-primary(ng-click="updateTsUid(uid)") Update
+                            .form-group
+                                label.col-md-3.control-label Instructions
+                                .col-md-7.p-t-5
+                                    ol
+                                        li Connect to the server. You'll be in the airlock.
+                                        li From the top menu select Settings > Identities
+                                        li Select the 'Default'
+                                        li Copy the value from the Unique ID field
+                                        li Paste into the Unique ID field above
+                                        li Click Update

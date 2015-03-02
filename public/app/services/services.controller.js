@@ -40,6 +40,14 @@ angular.module('ssAuth').controller('services.controller', ['CharacterService', 
 
     };
 
+    $scope.updateTsUid = function(uid) {
+        $http.put('/api/services/teamspeak', { uid: uid }).success(function(){
+            alert('UID saved');
+        }).error(function(){
+            alert('error saving uid, try again later');
+        });
+    };
+
     $scope.setPrimary = function(characterId) {
         CharacterService.updatePrimaryCharacter(characterId).then(function(){
             SessionService.getCurrentUser(true).then(function(user){

@@ -25,7 +25,28 @@ module.exports = function() {
 
     };
 
+    var findById = function(id) {
+
+        return new Promise(function(resolve, reject){
+
+            Corporation.findOne({ id: id }, function(err, corp){
+
+                if(err)
+                {
+                    Logger.log(Logger.level.critical, err, ['mongoose', 'corporation-service', 'findById'])
+                    return reject(err);
+                }
+
+                return resolve(corp);
+
+            });
+
+        });
+
+    };
+
     return {
-        find: find
+        find: find,
+        findById: findById
     }
 };
