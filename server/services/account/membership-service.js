@@ -4,6 +4,8 @@ var mongoose = require('mongoose'),
     Key = mongoose.model('Key'),
     Promise = require('bluebird');
 
+exports = module.exports;
+
 exports.apply = function(groupId, userId) {
 
     return new Promise(function (resolve, reject) {
@@ -55,6 +57,29 @@ exports.getPendingByUser = function(userId) {
 
 };
 
+exports.findByUser = function(userId) {
+
+    return new Promise(function(resolve, reject){
+
+        User.findOne({ _id: userId }, function(err, user){
+
+            if(err) return reject(err);
+            if(!user) return resolve( { count: 0 });
+
+            Member.find({ user: userId, status: 'Active' })
+                .populate('group')
+                .exec(function(err, memberships){
+                    if(err) return reject(err);
+                    return resolve(memberships);
+
+                });
+
+        });
+
+    });
+
+};
+
 exports.getActiveMembershipsByUser = function(userId) {
 
     return new Promise(function(resolve, reject){
@@ -86,40 +111,4 @@ exports.getActiveMembershipsByUser = function(userId) {
         });
 
     });
-};
-
-exports.getTeamspeakGroups = function(userId) {
-
-    return new Promise(function(resolve, reject){
-
-        User.findOne({ _id: userId }, function(err, user){
-
-            if(err) return reject(err);
-            if(!user) return resolve( { count: 0 });
-
-            Member.find({ user: userId, status: 'Active' })
-                .populate('group')
-                .exec(function(err, memberships){
-                    if(err) return reject(err);
-
-                    var groups = [];
-
-
-                    for(var x = 0; x < memberships.length; x++)
-                    {
-                        if(memberships[x].group.teamspeakId)
-                        {
-
-                        }
-                    }
-
-
-                    return resolve(groups);
-
-                });
-
-        });
-
-    });
-
 };

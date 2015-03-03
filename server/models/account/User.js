@@ -1,5 +1,6 @@
 var encrypt = require('../../services/encryption');
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    Promise = require('bluebird');
 
 
 var userSchema = mongoose.Schema({
@@ -39,6 +40,8 @@ userSchema.methods = {
 };
 
 var User = mongoose.model('User', userSchema);
+Promise.promisifyAll(User);
+Promise.promisifyAll(User.prototype);
 
 User.schema.path('email').validate(function(value) {
     var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;

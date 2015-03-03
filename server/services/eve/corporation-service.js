@@ -33,7 +33,7 @@ module.exports = function() {
 
                 if(err)
                 {
-                    Logger.log(Logger.level.critical, err, ['mongoose', 'corporation-service', 'findById'])
+                    Logger.log(Logger.level.critical, err, ['mongoose', 'corporation-service', 'findById']);
                     return reject(err);
                 }
 

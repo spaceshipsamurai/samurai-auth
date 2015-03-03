@@ -6,6 +6,9 @@ var permissions = {
     },
     'edit': {
         groups: ['Admins']
+    },
+    'sync': {
+        localOnly: true
     }
 };
 
@@ -55,6 +58,12 @@ module.exports = function() {
 
     };
 
+    var sync = function(req, res, next) {
+        allianceService.sync().then(function(){
+           res.json({ message: 'success'})
+        }).catch(next);
+    };
+
     var can = function(action) {
 
         return function(req, res, next) {
@@ -69,6 +78,10 @@ module.exports = function() {
                     return next();
             }
 
+            if(permissions[action] && permissions[action].localOnly) {
+                if(req.host === 'localhost') return next();
+            }
+
             return res.send(403);
         };
 
@@ -79,6 +92,7 @@ module.exports = function() {
         listAffiliated: listAffiliated,
         get: get,
         update: update,
-        can: can
+        can: can,
+        sync: sync
     }
 }();

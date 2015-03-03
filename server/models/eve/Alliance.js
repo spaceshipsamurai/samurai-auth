@@ -15,7 +15,13 @@ var schema = mongoose.Schema({
     isPrimary: { type: Boolean, default: false },
     forumGroup: Number,
     teamspeakGroup: Number,
-    jabberGroup: String
+    jabberGroup: String,
+    updated: Date
+});
+
+schema.pre('save', function(next){
+    this.updated = new Date();
+    next();
 });
 
 var Alliance = mongoose.model('Alliance', schema);

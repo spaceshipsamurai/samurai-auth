@@ -1,6 +1,7 @@
 require('./account/Group');
 require('./account/Member');
 require('./account/User');
+require('./account/Profile');
 require('./eve/Key');
 require('./eve/Alliance');
 require('./eve/Corporation');

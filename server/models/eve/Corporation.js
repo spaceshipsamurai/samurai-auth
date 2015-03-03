@@ -20,7 +20,9 @@ var schema = Schema({
     url: String,
     taxRate: Number,
     ticker: String,
-    coalitionMember: { type: Boolean, default: false }
+    coalitionMember: { type: Boolean, default: false },
+    teamspeakGroup: Number,
+    jabberGroup: String
 });
 
 schema.methods.sync = function(id, vcode) {

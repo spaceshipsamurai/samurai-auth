@@ -4,24 +4,24 @@ var mongoose = require('mongoose'),
     User = mongoose.model('User'),
     Member = mongoose.model('Member'),
     Alliance = mongoose.model('Alliance'),
-    Corporation = mongoose.model('Corporation');
+    Corporation = mongoose.model('Corporation'),
+    async = require('async');
 
-module.exports = function() {
+module.exports = function () {
 
-    var find = function(options, fields) {
+    var find = function (options, fields) {
 
-        return new Promise(function(resolve, reject){
+        return new Promise(function (resolve, reject) {
 
             var query = Alliance.find(options);
 
-            if(fields)
-            {
+            if (fields) {
                 query = query.select(fields);
             }
 
-            query.exec(function(err, alliances){
+            query.exec(function (err, alliances) {
 
-                if(err) {
+                if (err) {
                     return reject(err);
                 }
 
@@ -32,20 +32,19 @@ module.exports = function() {
 
     };
 
-    var findOne = function(options, fields) {
+    var findOne = function (options, fields) {
 
-        return new Promise(function(resolve, reject){
+        return new Promise(function (resolve, reject) {
 
             var query = Alliance.findOne(options);
 
-            if(fields)
-            {
+            if (fields) {
                 query = query.select(fields);
             }
 
-            query.exec(function(err, alliances){
+            query.exec(function (err, alliances) {
 
-                if(err) {
+                if (err) {
                     return reject(err);
                 }
 
@@ -56,16 +55,16 @@ module.exports = function() {
 
     };
 
-    var update = function(params) {
+    var update = function (params) {
 
-        return new Promise(function(resolve, reject){
-            Alliance.findOne({ id: params.id }, function(err, alliance){
+        return new Promise(function (resolve, reject) {
+            Alliance.findOne({id: params.id}, function (err, alliance) {
 
-                if(err){
+                if (err) {
                     return reject(err);
                 }
 
-                if(!alliance) {
+                if (!alliance) {
                     return reject('Invalid alliance id');
                 }
 
@@ -76,8 +75,8 @@ module.exports = function() {
                 alliance.forumGroup = params.forumGroup;
                 alliance.jabberGroup = params.jabberGroup;
 
-                alliance.save(function(err, saved){
-                    if(err) return reject(err);
+                alliance.save(function (err, saved) {
+                    if (err) return reject(err);
                     return resolve(saved);
                 });
 
@@ -86,16 +85,16 @@ module.exports = function() {
     };
 
     //returns 'Primary', 'Coalition', or 'Other'
-    var getType = function(id) {
+    var getType = function (id) {
 
-        return new Promise(function(resolve, reject){
+        return new Promise(function (resolve, reject) {
 
-            Alliance.findOne({ id: id }, function(err, alliance){
+            Alliance.findOne({id: id}, function (err, alliance) {
 
-                if(err) return reject(err);
+                if (err) return reject(err);
 
-                if(alliance.isPrimary) return resolve('Primary');
-                else if(alliance.coalitionMember) return resolve('Coalition');
+                if (alliance.isPrimary) return resolve('Primary');
+                else if (alliance.coalitionMember) return resolve('Coalition');
                 else return resolve('Other');
 
             })
@@ -104,11 +103,62 @@ module.exports = function() {
 
     };
 
+    var fetchAlliances = function() {
+        return new Promise(function(resolve, reject){
+            var client = new neow.EveClient({});
+            client.fetch('eve:AllianceList').then(resolve).catch(reject);
+        });
+    };
+
+    var sync = function () {
+
+        return fetchAlliances()
+            .then(function(fetched){
+                fetched = fetched.alliances;
+                var alliances = [];
+
+                for(var id in fetched)
+                    alliances.push(id);
+
+                async.each(alliances, function(id, cb){
+
+                    Alliance.findOne({ id: id }, function(err, alliance){
+
+                        if(err) return cb(err);
+                        if(!alliance) alliance = new Alliance();
+
+                        var data = fetched[id];
+
+                        alliance.memberCount = Number(data.memberCount);
+                        alliance.executor = Number(data.executorCorpID);
+                        alliance.started = new Date(data.startDate);
+                        alliance.id = Number(data.allianceID);
+                        alliance.ticker = data.shortName;
+                        alliance.name = data.name;
+                        alliance.corporations = [];
+
+                        for(var corp in data.memberCorporations)
+                            alliance.corporations.push(Number(corp));
+
+                        alliance.save(function(err, saved){
+                            if(err) return cb(err);
+                            return cb();
+                        })
+                    });
+                }, function(err){
+                    if(err) return Promise.reject(err);
+                    return Promise.resolve();
+                })
+            })
+
+    };
+
     return {
         find: find,
         findOne: findOne,
         update: update,
-        getType: getType
+        getType: getType,
+        sync: sync
     }
 
 };
