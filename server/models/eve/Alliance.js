@@ -1,4 +1,5 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    Promise = require('bluebird');
 
 var Schema = mongoose.Schema;
 
@@ -25,5 +26,8 @@ schema.pre('save', function(next){
 });
 
 var Alliance = mongoose.model('Alliance', schema);
+
+Promise.promisifyAll(Alliance);
+Promise.promisifyAll(Alliance.prototype);
 
 module.exports = Alliance;

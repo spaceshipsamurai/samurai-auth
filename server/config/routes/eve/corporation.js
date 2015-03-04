@@ -5,5 +5,6 @@ module.exports = function(app, controllerDir) {
     var controller = require(path.join(controllerDir, 'eve/corporation-controller'));
 
     app.get('/api/corporations', controller.can('view.admin'), controller.list);
+    app.get('/cron/corporations/sync', controller.can('sync'), controller.sync);
 
 };

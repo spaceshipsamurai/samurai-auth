@@ -3,6 +3,9 @@ var corpService = require('../../services/eve/corporation-service')();
 var permissions = {
     "view.admin": {
         groups: ['Admins']
+    },
+    "sync": {
+        localOnly: true
     }
 };
 
@@ -15,6 +18,14 @@ module.exports = function() {
         }).catch(function(err){
             return next(err);
         })
+
+    };
+
+    var sync = function(req, res, next) {
+
+        corpService.sync().then(function(){
+            return res.json({ message: 'success' })
+        }).catch(next);
 
     };
 
@@ -32,13 +43,18 @@ module.exports = function() {
                     return next();
             }
 
+            if(permissions[action] && permissions[action].localOnly)
+            {
+                if(req.host === 'localhost') return next();
+            }
+
             return res.send(403);
         };
 
     };
-
     return {
         list: list,
-        can: can
+        can: can,
+        sync: sync
     }
 }();
