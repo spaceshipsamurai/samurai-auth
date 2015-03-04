@@ -7,4 +7,3 @@ require('./eve/Alliance');
 require('./eve/Corporation');
 require('./eve/Character');
 require('./recruitment/Recruit');
-require('./system/CronJob');
